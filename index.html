@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1424"><link rel="manifest" href="manifest.json">
+<title>IDENTIF v9.5 - mídia</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#07111f;color:#fff;font-family:Arial,sans-serif}header{padding:17px 18px;background:#0d1a2d;position:sticky;top:0;z-index:5;border-bottom:1px solid #1b3150}h1{margin:0;font-size:27px}.sub{color:#b8c7da;margin-top:3px}.ver{position:absolute;right:18px;top:20px;color:#9db4d0;font-weight:bold}
+main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#172b47;border-radius:21px;padding:17px 12px}.num{font-size:34px;font-weight:800}.lab{color:#b9c7da}.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}.btn{border:0;border-radius:22px;padding:17px;background:#2674e8;color:#fff;font-size:17px;font-weight:800;min-height:70px}.btn small{display:block;font-size:12px;font-weight:normal;color:#d8e6fa;margin-top:4px}.wide{grid-column:1/-1}.secondary{background:#263f62}.danger{background:#633247}.section{margin-top:23px}h2{font-size:22px}
+.card{background:#172b47;border-radius:20px;padding:16px;margin:11px 0}.row{display:flex;gap:11px}.icon{font-size:29px}.grow{flex:1}.muted{color:#aebed4;font-size:12px}.desc{color:#c8d4e4;margin-top:8px;line-height:1.4}.pill{display:inline-block;background:#28486d;border-radius:12px;padding:4px 8px;margin-top:8px;font-size:12px}.cardbtn{border:0;border-radius:16px;padding:11px 14px;background:#2a4b73;color:#fff;font-weight:800;margin-top:11px}.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.thumb{width:100%;height:95px;object-fit:cover;border-radius:9px;background:#091321}.vthumb{height:95px;border-radius:9px;background:#091321;display:flex;align-items:center;justify-content:center;font-size:28px}
+.media-item{position:relative;cursor:pointer;border:0;padding:0;background:#091321;border-radius:9px;overflow:hidden;min-height:95px}
+.media-item .thumb,.media-item video{display:block;width:100%;height:95px;object-fit:cover;border-radius:9px;background:#091321}
+.media-item .playbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;font-size:21px;pointer-events:none}
+.media-more{width:100%;margin-top:8px}
+.viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:60;flex-direction:column}
+.viewer.on{display:flex}
+.viewer-top{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;background:#08111e}
+.viewer-title{font-weight:800}
+.viewer-body{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden}
+.viewer-body img,.viewer-body video{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.viewer-controls{display:flex;gap:10px;justify-content:center;padding:12px;background:#08111e;flex-wrap:wrap}
+.viewer-controls button{border:0;border-radius:16px;padding:12px 18px;background:#263f62;color:#fff;font-weight:800}.viewer-controls .delete-media{background:#633247}
+.viewer-count{color:#b9c7da;font-size:13px}
+
+.overlay{display:none;position:fixed;inset:0;background:#08111e;z-index:20;overflow:auto;padding:18px}.overlay.on{display:block}.close{border:0;background:none;color:#fff;font-size:31px;padding:0 8px}.notice{background:#11243d;border:1px solid #2a4c73;border-radius:14px;padding:12px;color:#c9d8eb;font-size:13px;line-height:1.4;margin:10px 0}label{display:block;color:#b9c7da;font-size:13px;font-weight:bold;margin:12px 0 6px}input,textarea,select{width:100%;background:#172942;border:0;border-radius:12px;padding:13px;color:#fff;font-size:16px}textarea{height:120px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{display:flex;gap:8px}.choice button{flex:1;border:0;border-radius:13px;padding:13px;background:#172942;color:#fff;font-weight:bold}.choice .on{background:#2674e8}.hidden{display:none!important}.save{width:100%;margin-top:15px}.listitem{padding:12px;background:#12253f;border-radius:14px;margin:7px 0}.number{font-size:18px;font-weight:800}.empty{color:#9eb0c8;text-align:center;padding:22px}.camera{display:none;position:fixed;inset:0;background:#000;z-index:40;flex-direction:column}.camera.on{display:flex}.camtop{padding:12px;display:flex;justify-content:space-between;align-items:center;background:#0b1422}.camview{flex:1;width:100%;object-fit:cover}.camcontrols{padding:17px;background:#0b1422;text-align:center}.circle{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:#fff}.record{border:0;border-radius:28px;padding:16px 30px;background:#d53e55;color:#fff;font-size:17px;font-weight:800}.stop{background:#8e2639}
+@media(max-width:560px){.actions{grid-template-columns:1fr}.twocol{grid-template-columns:1fr}.stats{gap:6px}.stat{padding:14px 9px}.num{font-size:28px}.media-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>IDENTIF</h1><div class="sub">Registro, investigação e relações</div><div class="ver">v9.5</div></header>
+<main>
+<div class="stats"><div class="stat"><div class="num" id="cnt">0</div><div class="lab">Ocorrências</div></div><div class="stat"><div class="num" id="cntV">0</div><div class="lab">Com veículo</div></div><div class="stat"><div class="num" id="cntS">0</div><div class="lab">Sem veículo</div></div></div>
+<div class="actions">
+<button class="btn" onclick="newPhoto()">📷 NOVA FOTO<small>Nova ocorrência</small></button>
+<button class="btn" onclick="newVideo()">🎥 GRAVAR VÍDEO<small>Nova ocorrência</small></button>
+<button class="btn wide" onclick="newGallery.click()">🖼️ ANEXAR MÍDIA<small>Várias fotos/vídeos para uma nova ocorrência</small></button>
+<input id="newGallery" class="hidden" type="file" accept="image/*,video/*" multiple onchange="galleryNew(this.files)">
+<button class="btn secondary" onclick="openCompare()">🔎 COMPARAR OCORRÊNCIAS<small>Coincidências de veículos por placa</small></button>
+<button class="btn secondary" onclick="openAnalysis()">📊 ANÁLISE DOS EVENTOS<small>Filtros, padrões e relações</small></button>
+<button class="btn secondary wide" onclick="openCalls()">📞 LIGAÇÕES SUSPEITAS<small>Registrar número e anexar prints</small></button>
+<button class="btn secondary" onclick="backupExport()">💾 BACKUP</button>
+<button class="btn secondary" onclick="document.getElementById('importFile').click()">♻️ RESTAURAR BACKUP</button>
+<input id="importFile" class="hidden" type="file" accept=".json,application/json" onchange="importBackup(this.files[0])">
+</div>
+<div class="section"><h2>Últimas ocorrências</h2><div id="events"></div></div>
+<div class="section"><h2>Últimas ligações suspeitas</h2><div id="callsMini"></div></div>
+</main>
+
+<div class="overlay" id="eventForm"><button class="close" onclick="closeEventForm()">‹</button><h2 id="formTitle">Nova ocorrência</h2><div id="attachMsg" class="notice hidden">Você está adicionando mídia à ocorrência existente. As mídias anteriores serão preservadas.</div>
+<div id="vehicleChoice" class="choice"><button id="vehYes" onclick="setVehicle(true)">🚗 Há veículo</button><button id="vehNo" onclick="setVehicle(false)">📍 Sem veículo</button></div>
+<div id="plateWrap"><label>Placa</label><input id="plate" maxlength="7" placeholder="ABC1D23" autocapitalize="characters"></div>
+<div id="dateWrap"><label>Data e hora REAL da ocorrência</label><div class="twocol"><input id="eventDate" type="date"><input id="eventTime" type="time"></div></div>
+<label>Descrição</label><textarea id="description"></textarea>
+<div id="existingMedia" class="notice hidden"></div><div id="pending"></div>
+<div id="attachControls" class="hidden"><button class="btn wide" onclick="attachPicker.click()">🖼️ SELECIONAR FOTOS/VÍDEOS</button><input id="attachPicker" class="hidden" type="file" accept="image/*,video/*" multiple onchange="galleryAttach(this.files)">
+<button class="btn wide" style="margin-top:9px" onclick="cameraFor('photo')">📷 TIRAR FOTO</button><button class="btn wide" style="margin-top:9px" onclick="cameraFor('video')">🎥 GRAVAR VÍDEO</button></div>
+<button class="btn save" onclick="saveEvent()">SALVAR</button></div>
+
+<div class="viewer" id="mediaViewer">
+  <div class="viewer-top"><button class="close" onclick="closeMediaViewer()">‹</button><b id="viewerTitle" class="viewer-title">Mídia</b><span id="viewerCount" class="viewer-count"></span></div>
+  <div id="viewerBody" class="viewer-body"></div>
+  <div class="viewer-controls"><button onclick="prevMedia()">◀ Anterior</button><button onclick="nextMedia()">Próxima ▶</button><button class="delete-media" onclick="deleteCurrentMedia()">🗑️ EXCLUIR ESTA MÍDIA</button></div>
+</div>
+
+<div class="camera" id="camera"><div class="camtop"><button class="close" onclick="closeCamera()">‹</button><b id="camLabel">Foto</b><button class="close" onclick="flipCamera()">↻</button></div><video id="video" class="camview" autoplay playsinline muted></video><div class="camcontrols" id="camControls"></div></div>
+
+<div class="overlay" id="calls"><button class="close" onclick="calls.classList.remove('on')">‹</button><h2>📞 Ligações suspeitas</h2><div class="notice">Registre o número mesmo quando ele não estiver identificado. Também é possível cadastrar apenas prints do histórico de chamadas.</div>
+<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
+
+<div class="overlay" id="compare"><button class="close" onclick="compare.classList.remove('on')">‹</button><h2>🔎 Comparar ocorrências</h2><div id="compareBody"></div></div>
+<div class="overlay" id="analysis"><button class="close" onclick="analysis.classList.remove('on')">‹</button><h2>📊 Análise dos eventos</h2><div id="analysisBody"></div></div>
+
+<script>
+const META_KEY='IDENTIF_OCORRENCIAS_V95';
+const CALL_KEY='IDENTIF_LIGACOES_V95';
+const BLOB_DB='IDENTIF_MIDIAS_V95';
+let eventsData=[], callsData=[], pending=[], attachId=null, hasVehicle=true, facing='environment', stream=null, recorder=null, chunks=[], camMode='photo';
+
+function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2)}
+function nowLocal(){let d=new Date(),o=new Date(d.getTime()-d.getTimezoneOffset()*60000);return o.toISOString().slice(0,16)}
+function today(){let d=new Date(),o=new Date(d.getTime()-d.getTimezoneOffset()*60000);return {d:o.toISOString().slice(0,10),t:o.toISOString().slice(11,16)}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function dt(s){if(!s)return '';return new Date(s).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}
+function load(){try{eventsData=JSON.parse(localStorage.getItem(META_KEY)||'[]')}catch{eventsData=[]}try{callsData=JSON.parse(localStorage.getItem(CALL_KEY)||'[]')}catch{callsData=[]}render()}
+function persist(){localStorage.setItem(META_KEY,JSON.stringify(eventsData));localStorage.setItem(CALL_KEY,JSON.stringify(callsData))}
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(BLOB_DB,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('files'))r.result.createObjectStore('files')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function putBlob(k,b){let db=await openDB();return new Promise((res,rej)=>{let t=db.transaction('files','readwrite');t.objectStore('files').put(b,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function getBlob(k){try{let db=await openDB();return await new Promise((res,rej)=>{let t=db.transaction('files');let r=t.objectStore('files').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch{return null}}
+async function deleteBlob(k){try{let db=await openDB();return await new Promise((res,rej)=>{let t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true);t.onerror=()=>rej(t.error)})}catch{return false}}
+async function mediaUrl(m){if(m.dataUrl)return m.dataUrl;if(m.url&&m.url.startsWith('data:'))return m.url;let b=await getBlob(m.id);return b?URL.createObjectURL(b):''}
+
+function render(){
+ document.getElementById('cnt').textContent=eventsData.length;document.getElementById('cntV').textContent=eventsData.filter(e=>e.hasVehicle).length;document.getElementById('cntS').textContent=eventsData.filter(e=>!e.hasVehicle).length;
+ let arr=[...eventsData].sort((a,b)=>(b.eventDateTime||'').localeCompare(a.eventDateTime||''));
+ document.getElementById('events').innerHTML=arr.map(e=>`<div class="card"><div class="row"><div class="icon">${e.hasVehicle?'🚗':'📍'}</div><div class="grow"><b>${esc(e.plate||'OCORRÊNCIA SEM VEÍCULO')}</b><div class="muted">Ocorrência: ${dt(e.eventDateTime)} • Registrada: ${dt(e.createdAt)}</div><div class="desc">${esc(e.description||'Sem descrição')}</div><span class="pill">${(e.media||[]).length} mídia${(e.media||[]).length===1?'':'s'}</span></div></div><div id="m_${e.id}" class="media-grid"></div><button class="cardbtn" onclick="startAttach('${e.id}')">📎 ADICIONAR FOTO/VÍDEO</button></div>`).join('')||'<div class="empty">Nenhuma ocorrência registrada.</div>';
+ arr.forEach(async e=>{
+   let box=document.getElementById('m_'+e.id);if(!box)return;
+   let media=e.media||[];
+   for(let i=0;i<Math.min(media.length,6);i++){
+     let m=media[i],u=await mediaUrl(m);
+     if(!u){let bad=document.createElement('div');bad.className='notice';bad.textContent='Mídia não disponível neste armazenamento';box.appendChild(bad);continue}
+     let item=document.createElement('button');item.className='media-item';item.type='button';item.title='Abrir mídia';
+     item.onclick=()=>openMediaViewer(e.id,i);
+     if(m.type&&m.type.startsWith('image')){
+       let im=document.createElement('img');im.className='thumb';im.src=u;im.alt=m.name||'Foto da ocorrência';item.appendChild(im);
+     }else{
+       let v=document.createElement('video');v.className='thumb';v.src=u;v.muted=true;v.playsInline=true;v.preload='metadata';item.appendChild(v);
+       let badge=document.createElement('span');badge.className='playbadge';badge.textContent='▶';item.appendChild(badge);
+     }
+     box.appendChild(item);
+   }
+   if(media.length>6){
+     let more=document.createElement('button');more.className='cardbtn media-more';more.type='button';
+     more.textContent='▶ VER TODAS AS '+media.length+' MÍDIAS';
+     more.onclick=()=>openMediaViewer(e.id,0);
+     box.after(more);
+   }
+ })
+ document.getElementById('callsMini').innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3).map(c=>`<div class="listitem"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}</div></div>`).join('')||'<div class="empty">Nenhuma ligação registrada.</div>';
+}
+
+function baseForm(){attachId=null;pending=[];attachMsg.classList.add('hidden');attachControls.classList.add('hidden');vehicleChoice.style.display='flex';dateWrap.classList.remove('hidden');plate.disabled=false;description.disabled=false;eventDate.disabled=false;eventTime.disabled=false;let t=today();eventDate.value=t.d;eventTime.value=t.t;description.value='';plate.value='';setVehicle(true);existingMedia.classList.add('hidden');pendingBox('pending')}
+function pendingBox(id){let b=document.getElementById(id);b.innerHTML=pending.map(m=>m.type.startsWith('image')?`<img class="thumb" style="margin-top:8px" src="${m.url}">`:`<div class="notice">🎥 ${esc(m.name||'Vídeo')}</div>`).join('')}
+function openNew(){baseForm();formTitle.textContent='Nova ocorrência';eventForm.classList.add('on')}
+function newPhoto(){camMode='photo';openCamera()}
+function newVideo(){camMode='video';openCamera()}
+function galleryNew(files){pending=[...files].map(f=>({id:uid(),blob:f,type:f.type,name:f.name,url:URL.createObjectURL(f)}));openNew();pendingBox('pending')}
+function setVehicle(v){hasVehicle=v;vehYes.className=v?'on':'';vehNo.className=v?'':'on';plateWrap.style.display=v?'block':'none'}
+function startAttach(id){let e=eventsData.find(x=>x.id===id);if(!e)return;attachId=id;pending=[];formTitle.textContent='Adicionar mídia à ocorrência';attachMsg.classList.remove('hidden');vehicleChoice.style.display='none';plateWrap.style.display=e.hasVehicle?'block':'none';plate.value=e.plate||'';plate.disabled=true;description.value=e.description||'';description.disabled=true;dateWrap.classList.add('hidden');attachControls.classList.remove('hidden');existingMedia.classList.remove('hidden');existingMedia.textContent=`Esta ocorrência já possui ${(e.media||[]).length} mídia(s). Elas serão preservadas.`;pendingBox('pending');eventForm.classList.add('on')}
+function galleryAttach(files){pending.push(...[...files].map(f=>({id:uid(),blob:f,type:f.type,name:f.name,url:URL.createObjectURL(f)})));pendingBox('pending')}
+async function cameraFor(m){camMode=m;closeEventForm();openCamera()}
+function saveEvent(){if(attachId)return finishAttach();let p=plate.value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(!eventDate.value||!eventTime.value){alert('Informe a data e hora real da ocorrência.');return}let e={id:uid(),hasVehicle,plate:hasVehicle?p:'',description:description.value,eventDateTime:eventDate.value+'T'+eventTime.value,createdAt:new Date().toISOString(),media:[]};finishNew(e)}
+async function finishNew(e){for(const m of pending){await putBlob(m.id,m.blob);e.media.push({id:m.id,type:m.type,name:m.name||'mídia'})}eventsData.push(e);persist();pending=[];closeEventForm();render();alert('Ocorrência salva.')}
+async function finishAttach(){if(!pending.length){alert('Selecione ou capture pelo menos uma foto/vídeo.');return}let e=eventsData.find(x=>x.id===attachId);for(const m of pending){await putBlob(m.id,m.blob);e.media=e.media||[];e.media.push({id:m.id,type:m.type,name:m.name||'mídia'})}persist();pending=[];let id=attachId;attachId=null;closeEventForm();render();alert('Mídia acrescentada à ocorrência sem apagar as anteriores.')}
+function closeEventForm(){eventForm.classList.remove('on');attachId=null;pending=[]}
+async function openCamera(){camera.classList.add('on');camLabel.textContent=camMode==='photo'?'Nova foto':'Gravar vídeo';camControls.innerHTML=camMode==='photo'?'<button class="circle" onclick="takePhoto()"></button>':'<button id="recBtn" class="record" onclick="toggleRec()">GRAVAR</button>';try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing},audio:camMode==='video'});video.srcObject=stream}catch(e){alert('Permita o acesso à câmera'+(camMode==='video'?' e ao microfone':'')+'.');closeCamera()}}
+function closeCamera(){if(recorder&&recorder.state==='recording')recorder.stop();if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;camera.classList.remove('on')}
+async function flipCamera(){facing=facing==='environment'?'user':'environment';if(stream){stream.getTracks().forEach(t=>t.stop());try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing},audio:camMode==='video'});video.srcObject=stream}catch{}}}
+function takePhoto(){let c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;c.getContext('2d').drawImage(video,0,0);c.toBlob(b=>{let m={id:uid(),blob:b,type:'image/jpeg',name:'foto.jpg',url:URL.createObjectURL(b)};pending.push(m);closeCamera();if(attachId){startAttach(attachId);pending.push(m);pendingBox('pending')}else openNew();},'image/jpeg',.92)}
+function toggleRec(){let b=document.getElementById('recBtn');if(recorder&&recorder.state==='recording'){recorder.stop();b.textContent='FINALIZANDO...';return}chunks=[];let mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';recorder=new MediaRecorder(stream,{mimeType:mime});recorder.ondataavailable=e=>e.data.size&&chunks.push(e.data);recorder.onstop=()=>{let blob=new Blob(chunks,{type:mime}),m={id:uid(),blob,type:mime,name:'video.webm',url:URL.createObjectURL(blob)};pending.push(m);closeCamera();if(attachId){startAttach(attachId);pending.push(m);pendingBox('pending')}else openNew()};recorder.start();b.textContent='PARAR';b.className='record stop'}
+
+let viewerEventId=null, viewerIndex=0, viewerObjectUrl=null;
+
+async function openMediaViewer(eventId,index){
+  let e=eventsData.find(x=>x.id===eventId); if(!e || !(e.media||[]).length)return;
+  viewerEventId=eventId; viewerIndex=Math.max(0,Math.min(index,(e.media||[]).length-1));
+  mediaViewer.classList.add('on');
+  await showViewerMedia();
+}
+async function showViewerMedia(){
+  let e=eventsData.find(x=>x.id===viewerEventId); if(!e)return;
+  let m=(e.media||[])[viewerIndex]; if(!m)return;
+  if(viewerObjectUrl){try{URL.revokeObjectURL(viewerObjectUrl)}catch{} viewerObjectUrl=null}
+  let u=await mediaUrl(m);
+  viewerBody.innerHTML='';
+  viewerTitle.textContent=m.type&&m.type.startsWith('image')?'Foto':'Vídeo';
+  viewerCount.textContent=(viewerIndex+1)+' / '+e.media.length;
+  if(!u){viewerBody.innerHTML='<div class="notice">Não foi possível carregar esta mídia. Se ela veio de uma versão anterior, restaure o backup dessa versão.</div>';return}
+  if(m.type&&m.type.startsWith('image')){
+    let im=document.createElement('img');im.src=u;im.alt=m.name||'Foto';viewerBody.appendChild(im);
+  }else{
+    let v=document.createElement('video');v.src=u;v.controls=true;v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');v.style.maxHeight='100%';viewerBody.appendChild(v);
+    v.play().catch(()=>{});
+  }
+}
+function prevMedia(){let e=eventsData.find(x=>x.id===viewerEventId);if(!e)return;viewerIndex=(viewerIndex-1+e.media.length)%e.media.length;showViewerMedia()}
+function nextMedia(){let e=eventsData.find(x=>x.id===viewerEventId);if(!e)return;viewerIndex=(viewerIndex+1)%e.media.length;showViewerMedia()}
+async function deleteCurrentMedia(){
+  let e=eventsData.find(x=>x.id===viewerEventId);
+  if(!e)return;
+  let media=e.media||[];
+  let m=media[viewerIndex];
+  if(!m)return;
+  let tipo=m.type&&m.type.startsWith('image')?'foto':'vídeo';
+  if(!confirm('Excluir esta '+tipo+' da ocorrência?\n\nEsta ação não pode ser desfeita.'))return;
+  if(m.id) await deleteBlob(m.id);
+  if(m.url && m.url.startsWith('blob:')){try{URL.revokeObjectURL(m.url)}catch{}}
+  e.media=media.filter(x=>x.id!==m.id);
+  persist();
+  if(!e.media.length){
+    closeMediaViewer();
+    render();
+    alert('Mídia excluída. A ocorrência permanece registrada.');
+    return;
+  }
+  viewerIndex=Math.min(viewerIndex,e.media.length-1);
+  await showViewerMedia();
+  render();
+  alert('Mídia excluída com sucesso.');
+}
+function closeMediaViewer(){if(viewerObjectUrl){try{URL.revokeObjectURL(viewerObjectUrl)}catch{}viewerObjectUrl=null}viewerBody.innerHTML='';mediaViewer.classList.remove('on');viewerEventId=null}
+document.addEventListener('keydown',e=>{if(!mediaViewer.classList.contains('on'))return;if(e.key==='Escape')closeMediaViewer();if(e.key==='ArrowLeft')prevMedia();if(e.key==='ArrowRight')nextMedia()});
+
+function openCalls(){calls.classList.add('on');callDate.value=nowLocal();renderCalls()}
+function renderCalls(){callsList.innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(c=>`<div class="card"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}</div><div class="desc">${esc(c.note||'')}</div><span class="pill">${(c.prints||[]).length} print(s)</span></div>`).join('')||'<div class="empty">Nenhum registro.</div>'}
+async function saveCall(){let files=[...callPrints.files],prints=[];for(const f of files){let id=uid();await putBlob(id,f);prints.push({id,type:f.type,name:f.name})}callsData.push({id:uid(),number:callNumber.value.trim(),type:callType.value,date:callDate.value||new Date().toISOString(),note:callNote.value,prints});persist();callNumber.value='';callNote.value='';callPrints.value='';renderCalls();render();alert('Ligação registrada.')}
+function openCompare(){let map={};eventsData.forEach(e=>{if(e.plate)map[e.plate]=(map[e.plate]||[]).concat([e])});let out=Object.entries(map).filter(([p,a])=>a.length>1).map(([p,a])=>`<div class="card"><b>🚗 ${esc(p)}</b><div class="muted">${a.length} ocorrências</div>${a.map(e=>`<div class="listitem">${dt(e.eventDateTime)} — ${esc(e.description||'')}</div>`).join('')}</div>`).join('');compareBody.innerHTML=out||'<div class="empty">Nenhuma placa aparece em mais de uma ocorrência.</div>';compare.classList.add('on')}
+function openAnalysis(){let byMonth={};eventsData.forEach(e=>{let k=(e.eventDateTime||'').slice(0,7)||'Sem data';byMonth[k]=(byMonth[k]||0)+1});analysisBody.innerHTML=`<div class="notice">A análise utiliza a <b>data real da ocorrência</b>.</div><h3>Total: ${eventsData.length}</h3>${Object.entries(byMonth).sort().reverse().map(([m,n])=>`<div class="listitem"><b>${esc(m)}</b><div class="muted">${n} ocorrência(s)</div></div>`).join('')||'<div class="empty">Sem dados.</div>'}`;analysis.classList.add('on')}
+async function backupExport(){let obj={app:'IDENTIF',version:'9.5',exportedAt:new Date().toISOString(),events:eventsData,calls:callsData,media:{}};for(const e of eventsData)for(const m of (e.media||[])){let b=await getBlob(m.id);if(b)obj.media[m.id]=await blobToData(b)}for(const c of callsData)for(const p of (c.prints||[])){let b=await getBlob(p.id);if(b)obj.media[p.id]=await blobToData(b)}let blob=new Blob([JSON.stringify(obj)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='IDENTIF_BACKUP_'+new Date().toISOString().slice(0,10)+'.json';a.click()}
+function blobToData(blob){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob)})}
+async function importBackup(file){if(!file)return;try{let o=JSON.parse(await file.text());if(!Array.isArray(o.events)&&!Array.isArray(o.calls))throw 0;eventsData=o.events||[];callsData=o.calls||[];for(const [k,v] of Object.entries(o.media||{})){let r=await fetch(v);await putBlob(k,await r.blob())}persist();render();alert('Backup restaurado.')}catch{alert('Backup inválido ou incompatível.')}}
+/* MIGRAÇÃO: reaproveita dados encontrados em chaves antigas, sem apagar nada */
+function migrateLegacy(){let candidates=['IDENTIF_EVENTS','IDENTIF_OCORRENCIAS','identif_ocorrencias','ocorrencias','IDENTIF_DB','identifData','identif_events','IDENTIF_EVENTS_V91','IDENTIF_EVENTS_V92','IDENTIF_EVENTS_V93','IDENTIF_OCORRENCIAS_V91','IDENTIF_OCORRENCIAS_V92','IDENTIF_OCORRENCIAS_V93'];let imported=0;for(let k of candidates){try{let v=JSON.parse(localStorage.getItem(k)||'null');if(!Array.isArray(v))continue;for(let x of v){if(!x||typeof x!=='object')continue;let e={...x};e.id=e.id||uid();e.createdAt=e.createdAt||e.dataRegistro||new Date().toISOString();e.eventDateTime=e.eventDateTime||e.dataOcorrencia||e.dataEvento||e.createdAt;e.hasVehicle=e.hasVehicle!==undefined?e.hasVehicle:!!(e.plate||e.placa);e.plate=e.plate||e.placa||'';e.description=e.description||e.desc||e.descricao||'';e.media=e.media||e.midias||e.fotos||[];if(!eventsData.some(z=>z.id===e.id))eventsData.push(e),imported++}}catch{}}persist();render();return imported}
+window.addEventListener('load',()=>{load();let n=migrateLegacy();if(n)alert('Foram recuperadas '+n+' ocorrência(s) de dados locais de versões anteriores. As mídias em formato já compatível também foram preservadas.')})
+</script>
+</body></html>

@@ -1,0 +1,9 @@
+{
+  "name": "IDENTIF - Registro e Investigação",
+  "short_name": "IDENTIF",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#0b1424",
+  "lang": "pt-BR"
+}
