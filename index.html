@@ -203,7 +203,54 @@ function renderCalls(){callsList.innerHTML=callsData.slice().sort((a,b)=>new Dat
 async function saveCall(){let files=[...callPrints.files],prints=[];for(const f of files){let id=uid();await putBlob(id,f);prints.push({id,type:f.type,name:f.name})}callsData.push({id:uid(),number:callNumber.value.trim(),type:callType.value,date:callDate.value||new Date().toISOString(),note:callNote.value,prints});persist();callNumber.value='';callNote.value='';callPrints.value='';renderCalls();render();alert('Ligação registrada.')}
 function openCompare(){let map={};eventsData.forEach(e=>{if(e.plate)map[e.plate]=(map[e.plate]||[]).concat([e])});let out=Object.entries(map).filter(([p,a])=>a.length>1).map(([p,a])=>`<div class="card"><b>🚗 ${esc(p)}</b><div class="muted">${a.length} ocorrências</div>${a.map(e=>`<div class="listitem">${dt(e.eventDateTime)} — ${esc(e.description||'')}</div>`).join('')}</div>`).join('');compareBody.innerHTML=out||'<div class="empty">Nenhuma placa aparece em mais de uma ocorrência.</div>';compare.classList.add('on')}
 function openAnalysis(){let byMonth={};eventsData.forEach(e=>{let k=(e.eventDateTime||'').slice(0,7)||'Sem data';byMonth[k]=(byMonth[k]||0)+1});analysisBody.innerHTML=`<div class="notice">A análise utiliza a <b>data real da ocorrência</b>.</div><h3>Total: ${eventsData.length}</h3>${Object.entries(byMonth).sort().reverse().map(([m,n])=>`<div class="listitem"><b>${esc(m)}</b><div class="muted">${n} ocorrência(s)</div></div>`).join('')||'<div class="empty">Sem dados.</div>'}`;analysis.classList.add('on')}
-function scanLostOccurrences(){let known=new Set(eventsData.map(e=>String(e.id))),candidates=['IDENTIF_OCORRENCIAS_V95','IDENTIF_EVENTS','IDENTIF_OCORRENCIAS','identif_ocorrencias','ocorrencias','IDENTIF_DB','identifData','identif_events','IDENTIF_EVENTS_V91','IDENTIF_EVENTS_V92','IDENTIF_EVENTS_V93','IDENTIF_OCORRENCIAS_V91','IDENTIF_OCORRENCIAS_V92','IDENTIF_OCORRENCIAS_V93'],found=[],seen=new Set();for(const k of candidates){try{let raw=localStorage.getItem(k);if(!raw)continue;let arr=JSON.parse(raw);if(!Array.isArray(arr))continue;for(const src of arr){if(!src||typeof src!=='object')continue;let x={...src};x.id=String(x.id||uid());if(known.has(x.id)||seen.has(x.id))continue;x.createdAt=x.createdAt||x.dataRegistro||new Date().toISOString();x.eventDateTime=x.eventDateTime||x.dataOcorrencia||x.dataEvento||x.createdAt;x.hasVehicle=x.hasVehicle!==undefined?x.hasVehicle:(x.envolveVeiculo==='SIM'?true:x.envolveVeiculo==='NAO'?false:!!(x.plate||x.placa));x.envolveVeiculo=x.hasVehicle?'SIM':'NAO';x.plate=x.hasVehicle?(x.plate||x.placa||null):null;x.description=x.description||x.desc||x.descricao||'';x.media=Array.isArray(x.media)?x.media:(Array.isArray(x.midias)?x.midias:(Array.isArray(x.fotos)?x.fotos:[]));found.push({key:k,event:x});seen.add(x.id)}}catch{}}if(!found.length){alert('Nenhuma ocorrência antiga foi encontrada. Os registros atuais não foram alterados.');return}let groups={};found.forEach(x=>(groups[x.key]??=[]).push(x.event));let details=Object.entries(groups).map(([k,a])=>{let v=k.match(/V9\d+/)?.[0];let label=v?'Versão '+v:'Chave antiga';return '• '+label+'\n  Chave: '+k+'\n  Encontradas: '+a.length+'\n  Exemplos: '+a.slice(0,3).map(x=>(x.eventDateTime||'Sem data')+' — '+(x.description||'Sem descrição')).join(' | ')}).join('\n\n');if(!confirm('Foram encontradas '+found.length+' ocorrência(s).\n\nORIGEM:\n\n'+details+'\n\nDeseja recuperar?\nNenhum registro atual será sobrescrito.'))return;for(const x of found){x.event._recuperadaDe=x.key;eventsData.push(x.event)}persist();render();alert(found.length+' ocorrência(s) recuperada(s). A origem foi registrada internamente.')}\nfunction exportOccurrencesJSON(){let payload={app:'IDENTIF',type:'ocorrencias',version:'9.5',exportedAt:new Date().toISOString(),count:eventsData.length,occurrences:eventsData};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='IDENTIF_OCORRENCIAS_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function scanLostOccurrences(){
+ try{
+  const known=new Set(eventsData.map(e=>String(e.id)));
+  const candidates=['IDENTIF_OCORRENCIAS_V95','IDENTIF_EVENTS','IDENTIF_OCORRENCIAS','identif_ocorrencias','ocorrencias','IDENTIF_DB','identifData','identif_events','IDENTIF_EVENTS_V91','IDENTIF_EVENTS_V92','IDENTIF_EVENTS_V93','IDENTIF_OCORRENCIAS_V91','IDENTIF_OCORRENCIAS_V92','IDENTIF_OCORRENCIAS_V93'];
+  const found=[]; const seen=new Set();
+  for(const key of candidates){
+   let raw=null;
+   try{raw=localStorage.getItem(key)}catch(err){continue}
+   if(!raw)continue;
+   try{
+    const parsed=JSON.parse(raw);
+    if(!Array.isArray(parsed))continue;
+    parsed.forEach(src=>{
+     if(!src||typeof src!=='object')return;
+     const x={...src};
+     x.id=String(x.id||uid());
+     if(known.has(x.id)||seen.has(x.id))return;
+     x.createdAt=x.createdAt||x.dataRegistro||new Date().toISOString();
+     x.eventDateTime=x.eventDateTime||x.dataOcorrencia||x.dataEvento||x.createdAt;
+     x.hasVehicle=x.hasVehicle!==undefined?x.hasVehicle:(x.envolveVeiculo==='SIM'?true:x.envolveVeiculo==='NAO'?false:!!(x.plate||x.placa));
+     x.envolveVeiculo=x.hasVehicle?'SIM':'NAO';
+     x.plate=x.hasVehicle?(x.plate||x.placa||null):null;
+     x.description=x.description||x.desc||x.descricao||'';
+     x.media=Array.isArray(x.media)?x.media:(Array.isArray(x.midias)?x.midias:(Array.isArray(x.fotos)?x.fotos:[]));
+     found.push({key:key,event:x});
+     seen.add(x.id);
+    });
+   }catch(err){}
+  }
+  if(!found.length){alert('Nenhuma ocorrência antiga foi encontrada no armazenamento local deste navegador.\n\nAs ocorrências atuais não foram alteradas.');return}
+  const groups={};
+  found.forEach(item=>{if(!groups[item.key])groups[item.key]=[];groups[item.key].push(item.event)});
+  let details='Foram encontradas '+found.length+' ocorrência(s):\n\n';
+  Object.keys(groups).forEach(key=>{
+   const arr=groups[key];
+   const match=key.match(/V9[0-9]+/);
+   const label=match?'Versão '+match[0]:'Chave antiga';
+   details+='• '+label+'\n  Chave: '+key+'\n  Encontradas: '+arr.length+'\n';
+   arr.slice(0,3).forEach(item=>{details+='  - '+(item.eventDateTime||'Sem data')+' — '+(item.description||'Sem descrição')+'\n'});
+   details+='\n';
+  });
+  if(!confirm(details+'Deseja recuperar essas ocorrências?\n\nNenhum registro atual será sobrescrito.'))return;
+  found.forEach(item=>{item.event._recuperadaDe=item.key;eventsData.push(item.event)});
+  persist();render();
+  alert(found.length+' ocorrência(s) recuperada(s).\n\nA origem de cada registro foi preservada internamente.\nNenhum registro atual foi sobrescrito.');
+ }catch(err){alert('Erro ao procurar ocorrências perdidas. Os registros atuais não foram alterados.')}
+}
+function exportOccurrencesJSON(){let payload={app:'IDENTIF',type:'ocorrencias',version:'9.5',exportedAt:new Date().toISOString(),count:eventsData.length,occurrences:eventsData};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='IDENTIF_OCORRENCIAS_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 async function importOccurrencesJSON(file){if(!file)return;try{let text=await file.text(),o=JSON.parse(text);let imported=Array.isArray(o)?o:(Array.isArray(o.occurrences)?o.occurrences:[]);if(!imported.length)throw new Error('Nenhuma ocorrência encontrada no arquivo.');let added=0,skipped=0;for(const src of imported){if(!src||typeof src!=='object')continue;let e={...src};e.id=e.id||uid();if(eventsData.some(x=>x.id===e.id)){skipped++;continue}e.createdAt=e.createdAt||new Date().toISOString();e.media=Array.isArray(e.media)?e.media:[];eventsData.push(e);added++}persist();render();alert('Restauração concluída.\\n\\nImportadas: '+added+'\\nJá existentes, não sobrescritas: '+skipped+'\\n\\nNenhum registro existente foi substituído.')}catch(err){alert('Não foi possível restaurar as ocorrências.\\n\\nO arquivo deve ser um JSON exportado pelo IDENTIF.')}finally{file.value=''}}
 async function backupExport(){let obj={app:'IDENTIF',version:'9.5',exportedAt:new Date().toISOString(),events:eventsData,calls:callsData,media:{}};for(const e of eventsData)for(const m of (e.media||[])){let b=await getBlob(m.id);if(b)obj.media[m.id]=await blobToData(b)}for(const c of callsData)for(const p of (c.prints||[])){let b=await getBlob(p.id);if(b)obj.media[p.id]=await blobToData(b)}let blob=new Blob([JSON.stringify(obj)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='IDENTIF_BACKUP_'+new Date().toISOString().slice(0,10)+'.json';a.click()}
 function blobToData(blob){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob)})}
