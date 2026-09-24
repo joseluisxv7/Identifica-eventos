@@ -43,7 +43,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <button class="btn secondary" onclick="document.getElementById('importFile').click()">♻️ RESTAURAR BACKUP</button>
 <button class="btn secondary" onclick="exportOccurrencesJSON()">📤 EXPORTAR OCORRÊNCIAS</button>
 <button class="btn secondary" onclick="document.getElementById('occImportFile').click()">📥 RESTAURAR OCORRÊNCIAS</button>
-<button id="lostSearchBtn" class="btn secondary wide" type="button" onclick="diagnosticarRecuperacao()">🔎 PROCURAR OCORRÊNCIAS PERDIDAS</button>
+<button id="lostSearchBtn" class="btn secondary wide" type="button" onclick="alert('FUNÇÃO DE RECUPERAÇÃO: '+typeof window.scanLostOccurrences+' | DIAGNÓSTICO: '+typeof window.diagnosticarRecuperacao)">🔎 PROCURAR OCORRÊNCIAS PERDIDAS</button>
 <input id="occImportFile" class="hidden" type="file" accept=".json,application/json" onchange="importOccurrencesJSON(this.files[0])">
 <input id="importFile" class="hidden" type="file" accept=".json,application/json" onchange="importBackup(this.files[0])">
 </div>
