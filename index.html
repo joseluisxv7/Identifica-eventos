@@ -43,7 +43,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <button class="btn secondary" onclick="document.getElementById('importFile').click()">♻️ RESTAURAR BACKUP</button>
 <button class="btn secondary" onclick="exportOccurrencesJSON()">📤 EXPORTAR OCORRÊNCIAS</button>
 <button class="btn secondary" onclick="document.getElementById('occImportFile').click()">📥 RESTAURAR OCORRÊNCIAS</button>
-<button id="lostSearchBtn" class="btn secondary wide" type="button">🔎 PROCURAR OCORRÊNCIAS PERDIDAS</button>
+<button id="lostSearchBtn" class="btn secondary wide" type="button" onclick="return scanLostOccurrences()">🔎 PROCURAR OCORRÊNCIAS PERDIDAS</button>
 <input id="occImportFile" class="hidden" type="file" accept=".json,application/json" onchange="importOccurrencesJSON(this.files[0])">
 <input id="importFile" class="hidden" type="file" accept=".json,application/json" onchange="importBackup(this.files[0])">
 </div>
@@ -256,6 +256,7 @@ function blobToData(blob){return new Promise((res,rej)=>{let r=new FileReader();
 async function importBackup(file){if(!file)return;try{let o=JSON.parse(await file.text());if(!Array.isArray(o.events)&&!Array.isArray(o.calls))throw 0;eventsData=o.events||[];callsData=o.calls||[];for(const [k,v] of Object.entries(o.media||{})){let r=await fetch(v);await putBlob(k,await r.blob())}persist();render();alert('Backup restaurado.')}catch{alert('Backup inválido ou incompatível.')}}
 /* MIGRAÇÃO: reaproveita dados encontrados em chaves antigas, sem apagar nada */
 function migrateLegacy(){let candidates=['IDENTIF_EVENTS','IDENTIF_OCORRENCIAS','identif_ocorrencias','ocorrencias','IDENTIF_DB','identifData','identif_events','IDENTIF_EVENTS_V91','IDENTIF_EVENTS_V92','IDENTIF_EVENTS_V93','IDENTIF_OCORRENCIAS_V91','IDENTIF_OCORRENCIAS_V92','IDENTIF_OCORRENCIAS_V93'];let imported=0;for(let k of candidates){try{let v=JSON.parse(localStorage.getItem(k)||'null');if(!Array.isArray(v))continue;for(let x of v){if(!x||typeof x!=='object')continue;let e={...x};e.id=e.id||uid();e.createdAt=e.createdAt||e.dataRegistro||new Date().toISOString();e.eventDateTime=e.eventDateTime||e.dataOcorrencia||e.dataEvento||e.createdAt;e.hasVehicle=e.hasVehicle!==undefined?e.hasVehicle:(e.envolveVeiculo==='SIM'?true:e.envolveVeiculo==='NAO'?false:!!(e.plate||e.placa));e.envolveVeiculo=e.hasVehicle?'SIM':'NAO';e.plate=e.hasVehicle?(e.plate||e.placa||null):null;e.description=e.description||e.desc||e.descricao||'';e.media=e.media||e.midias||e.fotos||[];if(!eventsData.some(z=>z.id===e.id))eventsData.push(e),imported++}}catch{}}persist();render();return imported}
+window.scanLostOccurrences=scanLostOccurrences;
 window.addEventListener('load',()=>{
  load();
  const b=document.getElementById('lostSearchBtn'); if(b)b.addEventListener('click',()=>window.scanLostOccurrences());
