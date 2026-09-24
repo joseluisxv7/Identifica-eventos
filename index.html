@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1424"><link rel="manifest" href="manifest.json">
-<title>IDENTIF v9.5 - mídia</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>IDENTIF v9.5.1 - mídia</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07111f;color:#fff;font-family:Arial,sans-serif}header{padding:17px 18px;background:#0d1a2d;position:sticky;top:0;z-index:5;border-bottom:1px solid #1b3150}h1{margin:0;font-size:27px}.sub{color:#b8c7da;margin-top:3px}.ver{position:absolute;right:18px;top:20px;color:#9db4d0;font-weight:bold}
 main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#172b47;border-radius:21px;padding:17px 12px}.num{font-size:34px;font-weight:800}.lab{color:#b9c7da}.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}.btn{border:0;border-radius:22px;padding:17px;background:#2674e8;color:#fff;font-size:17px;font-weight:800;min-height:70px}.btn small{display:block;font-size:12px;font-weight:normal;color:#d8e6fa;margin-top:4px}.wide{grid-column:1/-1}.secondary{background:#263f62}.danger{background:#633247}.section{margin-top:23px}h2{font-size:22px}
@@ -27,7 +27,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 </style>
 </head>
 <body>
-<header><h1>IDENTIF</h1><div class="sub">Registro, investigação e relações</div><div class="ver">v9.5</div></header>
+<header><h1>IDENTIF</h1><div class="sub">Registro, investigação e relações</div><div class="ver">v9.5.1</div></header>
 <main>
 <div class="stats"><div class="stat"><div class="num" id="cnt">0</div><div class="lab">Ocorrências</div></div><div class="stat"><div class="num" id="cntV">0</div><div class="lab">Com veículo</div></div><div class="stat"><div class="num" id="cntS">0</div><div class="lab">Sem veículo</div></div></div>
 <div class="actions">
@@ -43,7 +43,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <button class="btn secondary" onclick="document.getElementById('importFile').click()">♻️ RESTAURAR BACKUP</button>
 <button class="btn secondary" onclick="exportOccurrencesJSON()">📤 EXPORTAR OCORRÊNCIAS</button>
 <button class="btn secondary" onclick="document.getElementById('occImportFile').click()">📥 RESTAURAR OCORRÊNCIAS</button>
-<button id="lostSearchBtn" class="btn secondary wide" type="button" onclick="return scanLostOccurrences()">🔎 PROCURAR OCORRÊNCIAS PERDIDAS</button>
+<button id="lostSearchBtn" class="btn secondary wide" type="button" onclick="lostSearchNow()">🔎 PROCURAR OCORRÊNCIAS PERDIDAS</button>
 <input id="occImportFile" class="hidden" type="file" accept=".json,application/json" onchange="importOccurrencesJSON(this.files[0])">
 <input id="importFile" class="hidden" type="file" accept=".json,application/json" onchange="importBackup(this.files[0])">
 </div>
@@ -75,6 +75,12 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <div class="overlay" id="analysis"><button class="close" onclick="analysis.classList.remove('on')">‹</button><h2>📊 Análise dos eventos</h2><div id="analysisBody"></div></div>
 
 <script>
+function lostSearchNow(){
+ try{
+  if(typeof scanLostOccurrences==='function'){scanLostOccurrences();return;}
+  alert('O módulo de procura não foi carregado. Feche e abra novamente o IDENTIF.');
+ }catch(e){alert('Erro no botão de procura: '+(e&&e.message?e.message:String(e)));}
+}
 const META_KEY='IDENTIF_OCORRENCIAS_V95';
 const CALL_KEY='IDENTIF_LIGACOES_V95';
 const BLOB_DB='IDENTIF_MIDIAS_V95';
