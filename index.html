@@ -213,19 +213,22 @@ function scanLostOccurrences(){
  try{
   const currentIds=new Set(eventsData.map(e=>String(e.id)));
   const found=[],seen=new Set(),sources=[];
+  const candidates=[];
   for(let i=0;i<localStorage.length;i++){
    const key=localStorage.key(i); if(!key)continue;
    let raw=null,parsed=null;
-   try{raw=localStorage.getItem(key);if(raw)parsed=JSON.parse(raw)}catch(e){continue}
+   try{raw=localStorage.getItem(key);parsed=raw?JSON.parse(raw):null}catch(e){continue}
    if(!raw||!parsed)continue;
    const arrays=[];
-   if(Array.isArray(parsed))arrays.push(parsed);
+   if(Array.isArray(parsed))arrays.push({path:'[array]',value:parsed});
    else if(typeof parsed==='object'){
-    ['occurrences','ocorrencias','events','eventos','data','items','registros'].forEach(p=>{if(Array.isArray(parsed[p]))arrays.push(parsed[p])});
+    for(const p of Object.keys(parsed)){
+     if(Array.isArray(parsed[p]))arrays.push({path:p,value:parsed[p]});
+    }
    }
-   for(const arr of arrays){
+   for(const a of arrays){
     let matches=0;
-    for(const src of arr){
+    for(const src of a.value){
      if(!src||typeof src!=='object'||Array.isArray(src))continue;
      const looks=src.eventDateTime!==undefined||src.dataOcorrencia!==undefined||src.dataEvento!==undefined||src.envolveVeiculo!==undefined||src.hasVehicle!==undefined||src.plate!==undefined||src.placa!==undefined||src.description!==undefined||src.descricao!==undefined||src.media!==undefined||src.midias!==undefined||src.fotos!==undefined;
      if(!looks)continue;
@@ -237,24 +240,37 @@ function scanLostOccurrences(){
      e.envolveVeiculo=e.hasVehicle?'SIM':'NAO'; e.plate=e.hasVehicle?(e.plate||e.placa||null):null;
      e.description=e.description||e.desc||e.descricao||'';
      e.media=Array.isArray(e.media)?e.media:(Array.isArray(e.midias)?e.midias:(Array.isArray(e.fotos)?e.fotos:[]));
-     found.push({key,event:e}); seen.add(e.id); matches++;
+     found.push({key,path:a.path,event:e}); seen.add(e.id); matches++;
     }
-    if(matches)sources.push({key,count:matches,bytes:raw.length});
+    if(matches)sources.push({key,path:a.path,count:matches,bytes:raw.length});
    }
   }
-  if(!found.length){
-   let diag='Nenhuma ocorrência antiga foi identificada neste armazenamento.\n\nChaves encontradas: '+localStorage.length+'\n';
-   if(localStorage.length){const names=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k)names.push(k)}diag+='\nChaves existentes:\n• '+names.join('\n• ')}
-   diag+='\n\nIsto NÃO altera nem exclui os registros atuais.'; alert(diag); return;
+  let report='DIAGNÓSTICO DE OCORRÊNCIAS\n\n';
+  report+='Registros atuais: '+eventsData.length+'\n';
+  report+='Chaves no armazenamento: '+localStorage.length+'\n';
+  report+='Registros antigos recuperáveis encontrados: '+found.length+'\n\n';
+  if(sources.length){
+   report+='FONTES ENCONTRADAS:\n';
+   sources.forEach(s=>{report+='• '+s.key+(s.path==='[array]'?'':' → '+s.path)+' — '+s.count+' registro(s)\n'});
+   report+='\nEXEMPLOS:\n';
+   found.slice(0,8).forEach((x,i)=>{report+=(i+1)+'. '+(x.event.eventDateTime||'Sem data')+' — '+(x.event.description||'Sem descrição')+'\n   Fonte: '+x.key+(x.path==='[array]'?'':' → '+x.path)+'\n'});
+  }else{
+   report+='Nenhuma cópia antiga foi localizada nas chaves acessíveis deste armazenamento.\n';
+   report+='Isto NÃO exclui nem altera nenhum registro atual.\n';
   }
-  let details='Foram encontradas '+found.length+' ocorrência(s) que não estão na lista atual.\n\n';
-  sources.forEach(s=>{details+='• Chave: '+s.key+'\n  Registros encontrados: '+s.count+'\n  Tamanho: '+s.bytes+' bytes\n';found.filter(x=>x.key===s.key).slice(0,3).forEach(x=>{details+='  - '+(x.event.eventDateTime||'Sem data')+' — '+(x.event.description||'Sem descrição')+'\n'});details+='\n'});
-  if(!confirm(details+'Deseja recuperar essas ocorrências?\n\nNenhum registro atual será sobrescrito.'))return;
-  found.forEach(item=>{item.event._recuperadaDe=item.key;eventsData.push(item.event)});
-  persist();render();alert(found.length+' ocorrência(s) recuperada(s).\n\nNenhum registro atual foi sobrescrito.');
- }catch(err){alert('Erro ao procurar ocorrências perdidas: '+(err&&err.message?err.message:String(err)));}
+  if(found.length){
+   report+='\nDeseja recuperar os '+found.length+' registro(s) encontrados?\nNenhum registro atual será sobrescrito.';
+   if(!confirm(report))return;
+   found.forEach(x=>{x.event._recuperadaDe=x.key+(x.path==='[array]'?'':' → '+x.path);eventsData.push(x.event)});
+   persist();render();
+   alert(found.length+' ocorrência(s) recuperada(s) com sucesso.\n\nOs registros atuais foram preservados.');
+  }else{
+   alert(report);
+  }
+ }catch(err){alert('Erro no diagnóstico: '+(err&&err.message?err.message:String(err)));}
 }
 window.scanLostOccurrences=scanLostOccurrences;
+
 function exportOccurrencesJSON(){let payload={app:'IDENTIF',type:'ocorrencias',version:'9.5',exportedAt:new Date().toISOString(),count:eventsData.length,occurrences:eventsData};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='IDENTIF_OCORRENCIAS_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 async function importOccurrencesJSON(file){if(!file)return;try{let text=await file.text(),o=JSON.parse(text);let imported=Array.isArray(o)?o:(Array.isArray(o.occurrences)?o.occurrences:[]);if(!imported.length)throw new Error('Nenhuma ocorrência encontrada no arquivo.');let added=0,skipped=0;for(const src of imported){if(!src||typeof src!=='object')continue;let e={...src};e.id=e.id||uid();if(eventsData.some(x=>x.id===e.id)){skipped++;continue}e.createdAt=e.createdAt||new Date().toISOString();e.media=Array.isArray(e.media)?e.media:[];eventsData.push(e);added++}persist();render();alert('Restauração concluída.\\n\\nImportadas: '+added+'\\nJá existentes, não sobrescritas: '+skipped+'\\n\\nNenhum registro existente foi substituído.')}catch(err){alert('Não foi possível restaurar as ocorrências.\\n\\nO arquivo deve ser um JSON exportado pelo IDENTIF.')}finally{file.value=''}}
 async function backupExport(){let obj={app:'IDENTIF',version:'9.5',exportedAt:new Date().toISOString(),events:eventsData,calls:callsData,media:{}};for(const e of eventsData)for(const m of (e.media||[])){let b=await getBlob(m.id);if(b)obj.media[m.id]=await blobToData(b)}for(const c of callsData)for(const p of (c.prints||[])){let b=await getBlob(p.id);if(b)obj.media[p.id]=await blobToData(b)}let blob=new Blob([JSON.stringify(obj)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='IDENTIF_BACKUP_'+new Date().toISOString().slice(0,10)+'.json';a.click()}
