@@ -10,7 +10,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 .card{background:#172b47;border-radius:20px;padding:16px;margin:11px 0}.row{display:flex;gap:11px}.icon{font-size:29px}.grow{flex:1}.muted{color:#aebed4;font-size:12px}.desc{color:#c8d4e4;margin-top:8px;line-height:1.4}.pill{display:inline-block;background:#28486d;border-radius:12px;padding:4px 8px;margin-top:8px;font-size:12px}.cardbtn{border:0;border-radius:16px;padding:11px 14px;background:#2a4b73;color:#fff;font-weight:800;margin-top:11px}.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.thumb{width:100%;height:95px;object-fit:cover;border-radius:9px;background:#091321}.vthumb{height:95px;border-radius:9px;background:#091321;display:flex;align-items:center;justify-content:center;font-size:28px}
 .media-item{position:relative;cursor:pointer;border:0;padding:0;background:#091321;border-radius:9px;overflow:hidden;min-height:95px}
 .media-item .thumb,.media-item video{display:block;width:100%;height:95px;object-fit:cover;border-radius:9px;background:#091321}
-.media-item .playbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;font-size:21px;pointer-events:none}.call-print-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.call-print{border:0;padding:0;background:#091321;border-radius:9px;overflow:hidden;cursor:pointer}.call-print img{display:block;width:100%;height:95px;object-fit:cover}.ocr-status{margin-top:8px;color:#b9c7da;font-size:13px}.ocr-found{color:#bfe8c2;font-weight:bold}
+.media-item .playbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;font-size:21px;pointer-events:none}.call-print-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.call-print{border:0;padding:0;background:#091321;border-radius:9px;overflow:hidden;cursor:pointer}.call-print img{display:block;width:100%;height:95px;object-fit:cover}.ocr-status{margin-top:8px;color:#b9c7da;font-size:13px}.ocr-found{color:#bfe8c2;font-weight:bold}.call-recover{margin-top:8px}.call-missing{padding:10px;border-radius:10px;background:#382b22;color:#e7c89e;font-size:12px}
 .media-more{width:100%;margin-top:8px}
 .viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:60;flex-direction:column}
 .viewer.on{display:flex}
@@ -69,7 +69,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <div class="overlay" id="externalDevicePanel"><button class="close" onclick="closeExternalDevicePanel()">‹</button><h2>🔗 Dispositivo externo</h2><div class="notice">Use este painel para preparar uma câmera externa antes de gravar. Ao selecionar uma câmera, o IDENTIF exibirá a imagem ao vivo para conferência. O pareamento Bluetooth ou a integração específica de óculos será acrescentado quando o equipamento/protocolo estiver definido.</div><div id="externalDeviceList"></div><button class="btn wide" style="margin-top:9px" onclick="refreshExternalDevices()">🔄 ATUALIZAR DISPOSITIVOS</button><button class="btn wide secondary" style="margin-top:9px" onclick="usePhoneCamera()">📱 USAR CÂMERA DO CELULAR</button></div><div class="overlay" id="videoClassChoice"><button class="close" onclick="cancelVideoClassChoice()">‹</button><h2>Classificar o vídeo</h2><div class="notice">Antes de iniciar a gravação, informe como o vídeo será classificado. Você poderá alterar essa informação depois no histórico.</div><button class="btn wide" onclick="startVideoWithClassification(true)">🚗 COM VEÍCULO<small>O vídeo registra um evento envolvendo veículo.</small></button><button class="btn wide" style="margin-top:9px" onclick="startVideoWithClassification(false)">📍 SEM VEÍCULO<small>O vídeo não envolve veículo.</small></button><button class="btn wide secondary" style="margin-top:9px" onclick="startVideoWithClassification(null)">❓ ESCOLHER DEPOIS<small>Grava agora e define a classificação posteriormente.</small></button></div><div class="overlay" id="videoSourceChoice"><button class="close" onclick="cancelVideoSourceChoice()">‹</button><h2>Fonte da gravação</h2><div class="notice">Escolha de onde virá o vídeo. A classificação do evento continua como “Escolher depois”.</div><button class="btn wide" onclick="startVideoSource('celular')">📱 CÂMERA DO CELULAR<small>Usar a câmera e o microfone deste aparelho.</small></button><button id="externalSourceBtn" class="btn wide secondary" style="margin-top:9px" onclick="startVideoSource('externa')">🎥 CÂMERA EXTERNA<small>Preparada para óculos ou outro dispositivo compatível. A conexão do equipamento será adicionada quando ele estiver disponível.</small></button></div><div class="camera" id="camera"><div class="camtop"><button class="close" onclick="closeCamera()">‹</button><b id="camLabel">Foto</b><button class="close" onclick="flipCamera()">↻</button></div><video id="video" class="camview" autoplay playsinline muted></video><div class="camcontrols" id="camControls"></div></div>
 
 <div class="overlay" id="calls"><button class="close" onclick="calls.classList.remove('on')">‹</button><h2>📞 Ligações suspeitas</h2><div class="notice">Registre o número mesmo quando ele não estiver identificado. Também é possível cadastrar apenas prints do histórico de chamadas.</div>
-<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple onchange="previewCallPrints(this.files)"><div id="callPrintPreview" class="call-print-grid"></div><div id="callOcrStatus" class="ocr-status">O número será identificado automaticamente no print quando estiver visível.</div><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
+<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple onchange="previewCallPrints(this.files)"><div id="callPrintPreview" class="call-print-grid"></div><div id="callOcrStatus" class="ocr-status">O número será identificado automaticamente no print quando estiver visível.</div><button class="btn secondary call-recover" onclick="recoverAndRefreshCallPrints()">♻️ RECUPERAR PRINTS ANTIGOS</button><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
 
 <div class="overlay" id="compare"><button class="close" onclick="compare.classList.remove('on')">‹</button><h2>🔎 Comparar ocorrências</h2><div id="compareBody"></div></div>
 <div class="overlay" id="analysis"><button class="close" onclick="analysis.classList.remove('on')">‹</button><h2>📊 Análise dos eventos</h2><div id="analysisBody"></div></div>
@@ -97,6 +97,52 @@ function persist(){localStorage.setItem(META_KEY,JSON.stringify(eventsData));loc
 function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open(BLOB_DB,1);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains('files'))r.result.createObjectStore('files')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function putBlob(k,b){let db=await openDB();return new Promise((res,rej)=>{let t=db.transaction('files','readwrite');t.objectStore('files').put(b,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
 async function getBlob(k){try{let db=await openDB();return await new Promise((res,rej)=>{let t=db.transaction('files');let r=t.objectStore('files').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch{return null}}
+
+async function recoverLegacyCallPrints(){
+  const refs=[];
+  for(const c of callsData) for(const p of (c.prints||[])) if(p&&p.id) refs.push(String(p.id));
+  const wanted=new Set(refs);
+  if(!wanted.size||!('databases' in indexedDB)) return 0;
+  let recovered=0;
+  let dbs=[];
+  try{dbs=await indexedDB.databases()}catch{return 0}
+  for(const info of dbs){
+    const name=info&&info.name;
+    if(!name||name===BLOB_DB)continue;
+    let db=null;
+    try{
+      db=await new Promise((res,rej)=>{const r=indexedDB.open(name);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);r.onblocked=()=>rej(new Error('blocked'))});
+      const stores=[...db.objectStoreNames];
+      for(const storeName of stores){
+        const targets=[...wanted];
+        for(const key of targets){
+          try{
+            const value=await new Promise((res,rej)=>{
+              const tx=db.transaction(storeName,'readonly'), r=tx.objectStore(storeName).get(key);
+              r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);
+            });
+            if(value instanceof Blob){
+              await putBlob(key,value);wanted.delete(key);recovered++;continue;
+            }
+            if(value&&value.blob instanceof Blob){
+              await putBlob(key,value.blob);wanted.delete(key);recovered++;continue;
+            }
+          }catch{}
+        }
+        if(wanted.size===0)break;
+      }
+    }catch{}finally{try{if(db)db.close()}catch{}}
+    if(wanted.size===0)break;
+  }
+  return recovered;
+}
+
+async function recoverAndRefreshCallPrints(){
+  const recovered=await recoverLegacyCallPrints();
+  renderCalls();
+  if(recovered) alert('Foram recuperados '+recovered+' print(s) de versões anteriores do IDENTIF. Os registros das ligações foram preservados.');
+  return recovered;
+}
 async function deleteBlob(k){try{let db=await openDB();return await new Promise((res,rej)=>{let t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true);t.onerror=()=>rej(t.error)})}catch{return false}}
 async function mediaUrl(m){if(m.dataUrl)return m.dataUrl;if(m.url&&m.url.startsWith('data:'))return m.url;let b=await getBlob(m.id);return b?URL.createObjectURL(b):''}
 
@@ -234,7 +280,7 @@ async function renderSavedCallPrints(c){
   box.innerHTML='';
   for(let i=0;i<(c.prints||[]).length;i++){
     const p=c.prints[i],b=await getBlob(p.id);
-    if(!b){const n=document.createElement('div');n.className='notice';n.textContent='Print não disponível neste armazenamento';box.appendChild(n);continue}
+    if(!b){const n=document.createElement('div');n.className='call-missing';n.textContent='Print não disponível neste armazenamento. Use “RECUPERAR PRINTS ANTIGOS” para procurar a mídia das versões anteriores.';box.appendChild(n);continue}
     const u=URL.createObjectURL(b),btn=document.createElement('button');btn.className='call-print';btn.type='button';btn.title='Abrir print';
     const im=document.createElement('img');im.src=u;im.alt=p.name||'Print da ligação';btn.appendChild(im);btn.onclick=()=>openCallPrintViewer(c.id,i);box.appendChild(btn);
   }
@@ -406,7 +452,8 @@ window.addEventListener('load',()=>{
  load();
  const b=document.getElementById('lostSearchBtn'); if(b)b.addEventListener('click',()=>window.scanLostOccurrences());
  let n=migrateLegacy();
- if(n)alert('Foram recuperadas '+n+' ocorrência(s) de dados locais de versões anteriores. As mídias em formato já compatível também foram preservadas.')
+ if(n)alert('Foram recuperadas '+n+' ocorrência(s) de dados locais de versões anteriores. As mídias em formato já compatível também foram preservadas.');
+ setTimeout(()=>recoverLegacyCallPrints().then(n=>{if(n)render()}),500);
 })
 </script>
 </body></html>
