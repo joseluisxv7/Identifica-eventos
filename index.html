@@ -220,9 +220,9 @@ async function deleteCurrentMedia(){
 function closeMediaViewer(){if(viewerObjectUrl){try{URL.revokeObjectURL(viewerObjectUrl)}catch{}viewerObjectUrl=null}viewerBody.innerHTML='';mediaViewer.classList.remove('on');viewerEventId=null}
 document.addEventListener('keydown',e=>{if(!mediaViewer.classList.contains('on'))return;if(e.key==='Escape')closeMediaViewer();if(e.key==='ArrowLeft')prevMedia();if(e.key==='ArrowRight')nextMedia()});
 
-let callViewerId=null,callViewerIndex=0,callViewerObjectUrl=null,ocrWorker=null,ocrWorkerPromise=null,callOcrBusy=false;
+let callViewerId=null,callViewerIndex=0,callViewerObjectUrl=null,ocrWorker=null,ocrWorkerPromise=null,callOcrBusy=false,callNumberSource='manual';
 
-function openCalls(){calls.classList.add('on');callDate.value=nowLocal();callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';callPrintPreview.innerHTML='';renderCalls()}
+function openCalls(){calls.classList.add('on');callDate.value=nowLocal();callNumberSource='manual';callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';callPrintPreview.innerHTML='';renderCalls()}
 
 function renderCalls(){
   callsList.innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(c=>`<div class="card"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}${c.numberSource==='ocr'?' • identificado no print':''}</div><div class="desc">${esc(c.note||'')}</div><span class="pill">${(c.prints||[]).length} print(s)</span><div id="callprints_${esc(c.id)}" class="call-print-grid"></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';
@@ -285,9 +285,9 @@ async function runCallOCR(files){
     }
     const unique=[...new Set(candidates)];
     if(unique.length===1){
-      callNumber.value=unique[0];callOcrStatus.innerHTML='<span class="ocr-found">✓ Número identificado automaticamente: '+esc(unique[0])+'</span>';
+      callNumberSource='ocr';callNumber.value=unique[0];callOcrStatus.innerHTML='<span class="ocr-found">✓ Número identificado automaticamente: '+esc(unique[0])+'</span>';
     }else if(unique.length>1){
-      callNumber.value=unique[0];callOcrStatus.innerHTML='<span class="ocr-found">✓ Número identificado no print: '+esc(unique[0])+'</span><div class="muted">Foram encontrados outros números; confira o campo antes de salvar.</div>';
+      callNumberSource='ocr';callNumber.value=unique[0];callOcrStatus.innerHTML='<span class="ocr-found">✓ Número identificado no print: '+esc(unique[0])+'</span><div class="muted">Foram encontrados outros números; confira o campo antes de salvar.</div>';
     }else{
       callOcrStatus.textContent='Não foi possível identificar automaticamente um número. Você pode informar manualmente.';
     }
@@ -296,6 +296,8 @@ async function runCallOCR(files){
   }finally{callOcrBusy=false}
 }
 
+function numberSourceForCall(number){return number?(callNumberSource==='ocr'?'ocr':'manual'):'manual'}
+
 async function saveCall(){
   let files=[...callPrints.files];
   if(!files.length){alert('Selecione pelo menos um print da ligação.');return}
@@ -303,8 +305,8 @@ async function saveCall(){
   let prints=[];
   for(const f of files){let id=uid();await putBlob(id,f);prints.push({id,type:f.type,name:f.name})}
   const number=callNumber.value.trim();
-  callsData.push({id:uid(),number,type:callType.value,date:callDate.value||new Date().toISOString(),note:callNote.value,prints,numberSource:number?'ocr':'manual'});
-  persist();callNumber.value='';callNote.value='';callPrints.value='';callPrintPreview.innerHTML='';callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';renderCalls();render();alert('Ligação registrada.');
+  callsData.push({id:uid(),number,type:callType.value,date:callDate.value||new Date().toISOString(),note:callNote.value,prints,numberSource:numberSourceForCall(number)});
+  persist();callNumber.value='';callNote.value='';callPrints.value='';callPrintPreview.innerHTML='';callNumberSource='manual';callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';renderCalls();render();alert('Ligação registrada.');
 }
 
 async function openCallPrintViewer(callId,index){
