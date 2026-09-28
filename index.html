@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1424"><link rel="manifest" href="manifest.json">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>IDENTIF v9.5.1 - mídia</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>IDENTIF v9.5.3 - ligações</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07111f;color:#fff;font-family:Arial,sans-serif}header{padding:17px 18px;background:#0d1a2d;position:sticky;top:0;z-index:5;border-bottom:1px solid #1b3150}h1{margin:0;font-size:27px}.sub{color:#b8c7da;margin-top:3px}.ver{position:absolute;right:18px;top:20px;color:#9db4d0;font-weight:bold}
 main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#172b47;border-radius:21px;padding:17px 12px}.num{font-size:34px;font-weight:800}.lab{color:#b9c7da}.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}.btn{border:0;border-radius:22px;padding:17px;background:#2674e8;color:#fff;font-size:17px;font-weight:800;min-height:70px}.btn small{display:block;font-size:12px;font-weight:normal;color:#d8e6fa;margin-top:4px}.wide{grid-column:1/-1}.secondary{background:#263f62}.danger{background:#633247}.section{margin-top:23px}h2{font-size:22px}
 .card{background:#172b47;border-radius:20px;padding:16px;margin:11px 0}.row{display:flex;gap:11px}.icon{font-size:29px}.grow{flex:1}.muted{color:#aebed4;font-size:12px}.desc{color:#c8d4e4;margin-top:8px;line-height:1.4}.pill{display:inline-block;background:#28486d;border-radius:12px;padding:4px 8px;margin-top:8px;font-size:12px}.cardbtn{border:0;border-radius:16px;padding:11px 14px;background:#2a4b73;color:#fff;font-weight:800;margin-top:11px}.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.thumb{width:100%;height:95px;object-fit:cover;border-radius:9px;background:#091321}.vthumb{height:95px;border-radius:9px;background:#091321;display:flex;align-items:center;justify-content:center;font-size:28px}
 .media-item{position:relative;cursor:pointer;border:0;padding:0;background:#091321;border-radius:9px;overflow:hidden;min-height:95px}
 .media-item .thumb,.media-item video{display:block;width:100%;height:95px;object-fit:cover;border-radius:9px;background:#091321}
-.media-item .playbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;font-size:21px;pointer-events:none}
+.media-item .playbadge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;font-size:21px;pointer-events:none}.call-print-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.call-print{border:0;padding:0;background:#091321;border-radius:9px;overflow:hidden;cursor:pointer}.call-print img{display:block;width:100%;height:95px;object-fit:cover}.ocr-status{margin-top:8px;color:#b9c7da;font-size:13px}.ocr-found{color:#bfe8c2;font-weight:bold}
 .media-more{width:100%;margin-top:8px}
 .viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:60;flex-direction:column}
 .viewer.on{display:flex}
@@ -27,7 +27,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 </style>
 </head>
 <body>
-<header><h1>IDENTIF</h1><div class="sub">Registro, investigação e relações • BUILD RECUPERAÇÃO 039d0e</div><div class="ver">v9.5.2</div><div class="top-tools"><button class="btn secondary" onclick="openExternalDevicePanel()">🔗 DISPOSITIVO EXTERNO<small id="externalDeviceStatus">Nenhum dispositivo externo selecionado</small></button></div></header>
+<header><h1>IDENTIF</h1><div class="sub">Registro, investigação e relações • BUILD RECUPERAÇÃO 039d0e • CORREÇÃO LIGAÇÕES 2026-09-28</div><div class="ver">v9.5.3</div><div class="top-tools"><button class="btn secondary" onclick="openExternalDevicePanel()">🔗 DISPOSITIVO EXTERNO<small id="externalDeviceStatus">Nenhum dispositivo externo selecionado</small></button></div></header>
 <main>
 <div class="stats"><div class="stat"><div class="num" id="cnt">0</div><div class="lab">Ocorrências</div></div><div class="stat"><div class="num" id="cntV">0</div><div class="lab">Com veículo</div></div><div class="stat"><div class="num" id="cntS">0</div><div class="lab">Sem veículo</div></div></div>
 <div class="actions">
@@ -69,10 +69,11 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <div class="overlay" id="externalDevicePanel"><button class="close" onclick="closeExternalDevicePanel()">‹</button><h2>🔗 Dispositivo externo</h2><div class="notice">Use este painel para preparar uma câmera externa antes de gravar. Ao selecionar uma câmera, o IDENTIF exibirá a imagem ao vivo para conferência. O pareamento Bluetooth ou a integração específica de óculos será acrescentado quando o equipamento/protocolo estiver definido.</div><div id="externalDeviceList"></div><button class="btn wide" style="margin-top:9px" onclick="refreshExternalDevices()">🔄 ATUALIZAR DISPOSITIVOS</button><button class="btn wide secondary" style="margin-top:9px" onclick="usePhoneCamera()">📱 USAR CÂMERA DO CELULAR</button></div><div class="overlay" id="videoClassChoice"><button class="close" onclick="cancelVideoClassChoice()">‹</button><h2>Classificar o vídeo</h2><div class="notice">Antes de iniciar a gravação, informe como o vídeo será classificado. Você poderá alterar essa informação depois no histórico.</div><button class="btn wide" onclick="startVideoWithClassification(true)">🚗 COM VEÍCULO<small>O vídeo registra um evento envolvendo veículo.</small></button><button class="btn wide" style="margin-top:9px" onclick="startVideoWithClassification(false)">📍 SEM VEÍCULO<small>O vídeo não envolve veículo.</small></button><button class="btn wide secondary" style="margin-top:9px" onclick="startVideoWithClassification(null)">❓ ESCOLHER DEPOIS<small>Grava agora e define a classificação posteriormente.</small></button></div><div class="overlay" id="videoSourceChoice"><button class="close" onclick="cancelVideoSourceChoice()">‹</button><h2>Fonte da gravação</h2><div class="notice">Escolha de onde virá o vídeo. A classificação do evento continua como “Escolher depois”.</div><button class="btn wide" onclick="startVideoSource('celular')">📱 CÂMERA DO CELULAR<small>Usar a câmera e o microfone deste aparelho.</small></button><button id="externalSourceBtn" class="btn wide secondary" style="margin-top:9px" onclick="startVideoSource('externa')">🎥 CÂMERA EXTERNA<small>Preparada para óculos ou outro dispositivo compatível. A conexão do equipamento será adicionada quando ele estiver disponível.</small></button></div><div class="camera" id="camera"><div class="camtop"><button class="close" onclick="closeCamera()">‹</button><b id="camLabel">Foto</b><button class="close" onclick="flipCamera()">↻</button></div><video id="video" class="camview" autoplay playsinline muted></video><div class="camcontrols" id="camControls"></div></div>
 
 <div class="overlay" id="calls"><button class="close" onclick="calls.classList.remove('on')">‹</button><h2>📞 Ligações suspeitas</h2><div class="notice">Registre o número mesmo quando ele não estiver identificado. Também é possível cadastrar apenas prints do histórico de chamadas.</div>
-<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
+<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple onchange="previewCallPrints(this.files)"><div id="callPrintPreview" class="call-print-grid"></div><div id="callOcrStatus" class="ocr-status">O número será identificado automaticamente no print quando estiver visível.</div><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
 
 <div class="overlay" id="compare"><button class="close" onclick="compare.classList.remove('on')">‹</button><h2>🔎 Comparar ocorrências</h2><div id="compareBody"></div></div>
 <div class="overlay" id="analysis"><button class="close" onclick="analysis.classList.remove('on')">‹</button><h2>📊 Análise dos eventos</h2><div id="analysisBody"></div></div>
+<div class="viewer" id="callPrintViewer"><div class="viewer-top"><button class="close" onclick="closeCallPrintViewer()">‹</button><b id="callViewerTitle" class="viewer-title">Print da ligação</b><span id="callViewerCount" class="viewer-count"></span></div><div id="callViewerBody" class="viewer-body"></div><div class="viewer-controls"><button onclick="prevCallPrint()">◀ Anterior</button><button onclick="nextCallPrint()">Próximo ▶</button><button class="delete-media" onclick="closeCallPrintViewer()">FECHAR</button></div></div>
 
 <script>
 function lostSearchNow(){
@@ -219,9 +220,107 @@ async function deleteCurrentMedia(){
 function closeMediaViewer(){if(viewerObjectUrl){try{URL.revokeObjectURL(viewerObjectUrl)}catch{}viewerObjectUrl=null}viewerBody.innerHTML='';mediaViewer.classList.remove('on');viewerEventId=null}
 document.addEventListener('keydown',e=>{if(!mediaViewer.classList.contains('on'))return;if(e.key==='Escape')closeMediaViewer();if(e.key==='ArrowLeft')prevMedia();if(e.key==='ArrowRight')nextMedia()});
 
-function openCalls(){calls.classList.add('on');callDate.value=nowLocal();renderCalls()}
-function renderCalls(){callsList.innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(c=>`<div class="card"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}</div><div class="desc">${esc(c.note||'')}</div><span class="pill">${(c.prints||[]).length} print(s)</span></div>`).join('')||'<div class="empty">Nenhum registro.</div>'}
-async function saveCall(){let files=[...callPrints.files],prints=[];for(const f of files){let id=uid();await putBlob(id,f);prints.push({id,type:f.type,name:f.name})}callsData.push({id:uid(),number:callNumber.value.trim(),type:callType.value,date:callDate.value||new Date().toISOString(),note:callNote.value,prints});persist();callNumber.value='';callNote.value='';callPrints.value='';renderCalls();render();alert('Ligação registrada.')}
+let callViewerId=null,callViewerIndex=0,callViewerObjectUrl=null,ocrWorker=null,ocrWorkerPromise=null,callOcrBusy=false;
+
+function openCalls(){calls.classList.add('on');callDate.value=nowLocal();callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';callPrintPreview.innerHTML='';renderCalls()}
+
+function renderCalls(){
+  callsList.innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(c=>`<div class="card"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}${c.numberSource==='ocr'?' • identificado no print':''}</div><div class="desc">${esc(c.note||'')}</div><span class="pill">${(c.prints||[]).length} print(s)</span><div id="callprints_${esc(c.id)}" class="call-print-grid"></div></div>`).join('')||'<div class="empty">Nenhum registro.</div>';
+  callsData.forEach(c=>renderSavedCallPrints(c));
+}
+
+async function renderSavedCallPrints(c){
+  const box=document.getElementById('callprints_'+c.id); if(!box)return;
+  box.innerHTML='';
+  for(let i=0;i<(c.prints||[]).length;i++){
+    const p=c.prints[i],b=await getBlob(p.id);
+    if(!b){const n=document.createElement('div');n.className='notice';n.textContent='Print não disponível neste armazenamento';box.appendChild(n);continue}
+    const u=URL.createObjectURL(b),btn=document.createElement('button');btn.className='call-print';btn.type='button';btn.title='Abrir print';
+    const im=document.createElement('img');im.src=u;im.alt=p.name||'Print da ligação';btn.appendChild(im);btn.onclick=()=>openCallPrintViewer(c.id,i);box.appendChild(btn);
+  }
+}
+
+function previewCallPrints(files){
+  callPrintPreview.innerHTML='';
+  const list=[...files];
+  if(!list.length){callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';return}
+  list.forEach(f=>{const u=URL.createObjectURL(f),btn=document.createElement('button');btn.className='call-print';btn.type='button';const im=document.createElement('img');im.src=u;im.alt=f.name;btn.appendChild(im);callPrintPreview.appendChild(btn)});
+  if(!callNumber.value.trim())runCallOCR(list);
+}
+
+function normalizeCallNumber(v){
+  let s=String(v||'').replace(/\D/g,'');
+  if(s.startsWith('55')&&(s.length===12||s.length===13))s=s.slice(2);
+  if(s.length===11&&s[2]==='9')return '('+s.slice(0,2)+') '+s.slice(2,7)+'-'+s.slice(7);
+  if(s.length===10)return '('+s.slice(0,2)+') '+s.slice(2,6)+'-'+s.slice(6);
+  if(/^(0800|0300|0500)\d{7}$/.test(s))return s.slice(0,4)+' '+s.slice(4,7)+' '+s.slice(7);
+  if(/^(400[0-9])\d{6}$/.test(s))return s;
+  return '';
+}
+
+function callNumberCandidates(text){
+  const out=[],raw=String(text||'').replace(/[\u00a0]/g,' ');
+  const re=/(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\b\d{2}\b)[\s.-]*9\d{4}[\s.-]?\d{4}|(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\b\d{2}\b)[\s.-]*[2-5]\d{3}[\s.-]?\d{4}|\b(?:0800|0300|0500)\s*[\d\s.-]{7,}\b/g;
+  for(const m of raw.matchAll(re)){const n=normalizeCallNumber(m[0]);if(n&&!out.includes(n))out.push(n)}
+  return out;
+}
+
+async function getOCRWorker(){
+  if(window.Tesseract && !ocrWorkerPromise){ocrWorkerPromise=(async()=>{ocrWorker=await Tesseract.createWorker('por');return ocrWorker})()}
+  if(!window.Tesseract){
+    await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=resolve;s.onerror=()=>reject(new Error('Não foi possível carregar o módulo de leitura do print.'));document.head.appendChild(s)});
+    ocrWorkerPromise=(async()=>{ocrWorker=await Tesseract.createWorker('por');return ocrWorker})()
+  }
+  return ocrWorkerPromise;
+}
+
+async function runCallOCR(files){
+  if(callOcrBusy||callNumber.value.trim())return;
+  callOcrBusy=true;callOcrStatus.textContent='🔎 Lendo o número dos prints...';
+  try{
+    const worker=await getOCRWorker(),candidates=[];
+    for(const f of files){
+      const result=await worker.recognize(f);
+      candidates.push(...callNumberCandidates(result.data.text||''));
+    }
+    const unique=[...new Set(candidates)];
+    if(unique.length===1){
+      callNumber.value=unique[0];callOcrStatus.innerHTML='<span class="ocr-found">✓ Número identificado automaticamente: '+esc(unique[0])+'</span>';
+    }else if(unique.length>1){
+      callNumber.value=unique[0];callOcrStatus.innerHTML='<span class="ocr-found">✓ Número identificado no print: '+esc(unique[0])+'</span><div class="muted">Foram encontrados outros números; confira o campo antes de salvar.</div>';
+    }else{
+      callOcrStatus.textContent='Não foi possível identificar automaticamente um número. Você pode informar manualmente.';
+    }
+  }catch(e){
+    callOcrStatus.textContent='A leitura automática do print não ficou disponível. O cadastro manual continua funcionando.';
+  }finally{callOcrBusy=false}
+}
+
+async function saveCall(){
+  let files=[...callPrints.files];
+  if(!files.length){alert('Selecione pelo menos um print da ligação.');return}
+  if(!callNumber.value.trim())await runCallOCR(files);
+  let prints=[];
+  for(const f of files){let id=uid();await putBlob(id,f);prints.push({id,type:f.type,name:f.name})}
+  const number=callNumber.value.trim();
+  callsData.push({id:uid(),number,type:callType.value,date:callDate.value||new Date().toISOString(),note:callNote.value,prints,numberSource:number?'ocr':'manual'});
+  persist();callNumber.value='';callNote.value='';callPrints.value='';callPrintPreview.innerHTML='';callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';renderCalls();render();alert('Ligação registrada.');
+}
+
+async function openCallPrintViewer(callId,index){
+  const c=callsData.find(x=>x.id===callId);if(!c||!(c.prints||[]).length)return;
+  callViewerId=callId;callViewerIndex=Math.max(0,Math.min(index,c.prints.length-1));callPrintViewer.classList.add('on');await showCallPrint();
+}
+async function showCallPrint(){
+  const c=callsData.find(x=>x.id===callViewerId);if(!c)return;const p=(c.prints||[])[callViewerIndex];if(!p)return;
+  if(callViewerObjectUrl){try{URL.revokeObjectURL(callViewerObjectUrl)}catch{}callViewerObjectUrl=null}
+  const b=await getBlob(p.id);callViewerBody.innerHTML='';callViewerCount.textContent=(callViewerIndex+1)+' / '+c.prints.length;callViewerTitle.textContent=p.name||'Print da ligação';
+  if(!b){callViewerBody.innerHTML='<div class="notice">Este print não está mais disponível no armazenamento local.</div>';return}
+  callViewerObjectUrl=URL.createObjectURL(b);const im=document.createElement('img');im.src=callViewerObjectUrl;im.alt=p.name||'Print da ligação';callViewerBody.appendChild(im);
+}
+function prevCallPrint(){const c=callsData.find(x=>x.id===callViewerId);if(!c)return;callViewerIndex=(callViewerIndex-1+c.prints.length)%c.prints.length;showCallPrint()}
+function nextCallPrint(){const c=callsData.find(x=>x.id===callViewerId);if(!c)return;callViewerIndex=(callViewerIndex+1)%c.prints.length;showCallPrint()}
+function closeCallPrintViewer(){if(callViewerObjectUrl){try{URL.revokeObjectURL(callViewerObjectUrl)}catch{}callViewerObjectUrl=null}callViewerBody.innerHTML='';callPrintViewer.classList.remove('on');callViewerId=null}
 function openCompare(){let map={};eventsData.forEach(e=>{if(e.plate)map[e.plate]=(map[e.plate]||[]).concat([e])});let out=Object.entries(map).filter(([p,a])=>a.length>1).map(([p,a])=>`<div class="card"><b>🚗 ${esc(p)}</b><div class="muted">${a.length} ocorrências</div>${a.map(e=>`<div class="listitem">${dt(e.eventDateTime)} — ${esc(e.description||'')}</div>`).join('')}</div>`).join('');compareBody.innerHTML=out||'<div class="empty">Nenhuma placa aparece em mais de uma ocorrência.</div>';compare.classList.add('on')}
 function openAnalysis(){let byMonth={};eventsData.forEach(e=>{let k=(e.eventDateTime||'').slice(0,7)||'Sem data';byMonth[k]=(byMonth[k]||0)+1});analysisBody.innerHTML=`<div class="notice">A análise utiliza a <b>data real da ocorrência</b>.</div><h3>Total: ${eventsData.length}</h3>${Object.entries(byMonth).sort().reverse().map(([m,n])=>`<div class="listitem"><b>${esc(m)}</b><div class="muted">${n} ocorrência(s)</div></div>`).join('')||'<div class="empty">Sem dados.</div>'}`;analysis.classList.add('on')}
 function diagnosticarRecuperacao(){
