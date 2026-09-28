@@ -69,7 +69,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <div class="overlay" id="externalDevicePanel"><button class="close" onclick="closeExternalDevicePanel()">‹</button><h2>🔗 Dispositivo externo</h2><div class="notice">Use este painel para preparar uma câmera externa antes de gravar. Ao selecionar uma câmera, o IDENTIF exibirá a imagem ao vivo para conferência. O pareamento Bluetooth ou a integração específica de óculos será acrescentado quando o equipamento/protocolo estiver definido.</div><div id="externalDeviceList"></div><button class="btn wide" style="margin-top:9px" onclick="refreshExternalDevices()">🔄 ATUALIZAR DISPOSITIVOS</button><button class="btn wide secondary" style="margin-top:9px" onclick="usePhoneCamera()">📱 USAR CÂMERA DO CELULAR</button></div><div class="overlay" id="videoClassChoice"><button class="close" onclick="cancelVideoClassChoice()">‹</button><h2>Classificar o vídeo</h2><div class="notice">Antes de iniciar a gravação, informe como o vídeo será classificado. Você poderá alterar essa informação depois no histórico.</div><button class="btn wide" onclick="startVideoWithClassification(true)">🚗 COM VEÍCULO<small>O vídeo registra um evento envolvendo veículo.</small></button><button class="btn wide" style="margin-top:9px" onclick="startVideoWithClassification(false)">📍 SEM VEÍCULO<small>O vídeo não envolve veículo.</small></button><button class="btn wide secondary" style="margin-top:9px" onclick="startVideoWithClassification(null)">❓ ESCOLHER DEPOIS<small>Grava agora e define a classificação posteriormente.</small></button></div><div class="overlay" id="videoSourceChoice"><button class="close" onclick="cancelVideoSourceChoice()">‹</button><h2>Fonte da gravação</h2><div class="notice">Escolha de onde virá o vídeo. A classificação do evento continua como “Escolher depois”.</div><button class="btn wide" onclick="startVideoSource('celular')">📱 CÂMERA DO CELULAR<small>Usar a câmera e o microfone deste aparelho.</small></button><button id="externalSourceBtn" class="btn wide secondary" style="margin-top:9px" onclick="startVideoSource('externa')">🎥 CÂMERA EXTERNA<small>Preparada para óculos ou outro dispositivo compatível. A conexão do equipamento será adicionada quando ele estiver disponível.</small></button></div><div class="camera" id="camera"><div class="camtop"><button class="close" onclick="closeCamera()">‹</button><b id="camLabel">Foto</b><button class="close" onclick="flipCamera()">↻</button></div><video id="video" class="camview" autoplay playsinline muted></video><div class="camcontrols" id="camControls"></div></div>
 
 <div class="overlay" id="calls"><button class="close" onclick="calls.classList.remove('on')">‹</button><h2>📞 Ligações suspeitas</h2><div class="notice">Registre o número mesmo quando ele não estiver identificado. Também é possível cadastrar apenas prints do histórico de chamadas.</div>
-<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple onchange="previewCallPrints(this.files)"><div id="callPrintPreview" class="call-print-grid"></div><div id="callOcrStatus" class="ocr-status">O número será identificado automaticamente no print quando estiver visível.</div><button class="btn secondary call-recover" onclick="recoverAndRefreshCallPrints()">♻️ RECUPERAR PRINTS ANTIGOS</button><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
+<label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple onchange="previewCallPrints(this.files)"><div id="callPrintPreview" class="call-print-grid"></div><div id="callOcrStatus" class="ocr-status">O número será identificado automaticamente no print quando estiver visível.</div><button class="btn secondary call-recover" onclick="recoverAndRefreshCallPrints()">♻️ RECUPERAR PRINTS ANTIGOS</button><button class="btn secondary call-recover" onclick="readLegacyCallNumbers()">🔎 LER NÚMEROS DOS PRINTS ANTIGOS</button><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
 
 <div class="overlay" id="compare"><button class="close" onclick="compare.classList.remove('on')">‹</button><h2>🔎 Comparar ocorrências</h2><div id="compareBody"></div></div>
 <div class="overlay" id="analysis"><button class="close" onclick="analysis.classList.remove('on')">‹</button><h2>📊 Análise dos eventos</h2><div id="analysisBody"></div></div>
@@ -142,6 +142,62 @@ async function recoverAndRefreshCallPrints(){
   renderCalls();
   if(recovered) alert('Foram recuperados '+recovered+' print(s) de versões anteriores do IDENTIF. Os registros das ligações foram preservados.');
   return recovered;
+}
+
+function legacyPhoneCandidates(text){
+  const out=[], seen=new Set();
+  const s=String(text||'').replace(/[\\u00a0]/g,' ');
+  const patterns=[
+    /(?:\\+?55[\\s.-]*)?(?:\\(\\s*\\d{2}\\s*\\)|\\b\\d{2}\\b)[\\s.-]*9\\d{4}[\\s.-]?\\d{4}/g,
+    /(?:\\+?55[\\s.-]*)?(?:\\(\\s*\\d{2}\\s*\\)|\\b\\d{2}\\b)[\\s.-]*[2-5]\\d{3}[\\s.-]?\\d{4}/g,
+    /\\b(?:0800|0300|0500)[\\s.-]*[\\d\\s.-]{7,}\\b/g
+  ];
+  for(const re of patterns){
+    for(const m of s.matchAll(re)){
+      const n=normalizeCallNumber(m[0]);
+      if(n&&!seen.has(n)){seen.add(n);out.push(n)}
+    }
+  }
+  return out;
+}
+
+async function readLegacyCallNumbers(){
+  const targets=callsData.filter(c=>(c.prints||[]).length && !String(c.number||'').trim());
+  if(!targets.length){alert('As ligações que possuem prints já têm número preenchido.');return}
+  callOcrBusy=true;
+  let changed=0, ambiguous=[];
+  try{
+    const worker=await getOCRWorker();
+    for(const c of targets){
+      const candidates=[];
+      for(const p of (c.prints||[])){
+        let b=await getBlob(p.id);
+        if(!b)continue;
+        try{
+          const result=await worker.recognize(b);
+          candidates.push(...legacyPhoneCandidates(result.data.text||''));
+        }catch{}
+      }
+      const unique=[...new Set(candidates)];
+      if(unique.length===1){
+        c.number=unique[0];
+        c.numberSource='ocr-legacy';
+        changed++;
+      }else if(unique.length>1){
+        ambiguous.push({id:c.id,numbers:unique});
+      }
+    }
+    persist();
+    renderCalls();
+    render();
+    let msg='Leitura concluída. '+changed+' ligação(ões) tiveram o número preenchido automaticamente.';
+    if(ambiguous.length){
+      msg+='\\n\\n'+ambiguous.length+' ligação(ões) apresentaram mais de um número. Elas permanecerão para conferência manual.';
+    }
+    alert(msg);
+  }catch(e){
+    alert('Não foi possível concluir a leitura dos prints antigos. Verifique se os prints estão disponíveis e tente novamente.');
+  }finally{callOcrBusy=false}
 }
 async function deleteBlob(k){try{let db=await openDB();return await new Promise((res,rej)=>{let t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true);t.onerror=()=>rej(t.error)})}catch{return false}}
 async function mediaUrl(m){if(m.dataUrl)return m.dataUrl;if(m.url&&m.url.startsWith('data:'))return m.url;let b=await getBlob(m.id);return b?URL.createObjectURL(b):''}
