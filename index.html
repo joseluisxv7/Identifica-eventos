@@ -216,17 +216,23 @@ async function readLegacyCallNumbers(){
 async function deleteBlob(k){try{let db=await openDB();return await new Promise((res,rej)=>{let t=db.transaction('files','readwrite');t.objectStore('files').delete(k);t.oncomplete=()=>res(true);t.onerror=()=>rej(t.error)})}catch{return false}}
 async function mediaUrl(m){if(m.dataUrl)return m.dataUrl;if(m.url&&m.url.startsWith('data:'))return m.url;let b=await getBlob(m.id);return b?URL.createObjectURL(b):''}
 
+function toggleMediaSection(id,btn){
+  const panel=document.getElementById('mp_'+id);
+  if(!panel)return;
+  const open=panel.classList.toggle('open');
+  btn.classList.toggle('open',open);
+  if(open){
+    btn.setAttribute('aria-expanded','true');
+  }else{
+    btn.setAttribute('aria-expanded','false');
+  }
+}
+window.toggleMediaSection=toggleMediaSection;
+
 function render(){
  document.getElementById('cnt').textContent=eventsData.length;document.getElementById('cntV').textContent=eventsData.filter(e=>e.hasVehicle===true).length;document.getElementById('cntS').textContent=eventsData.filter(e=>e.hasVehicle===false).length;
  let arr=[...eventsData].sort((a,b)=>(b.eventDateTime||'').localeCompare(a.eventDateTime||''));
  document.getElementById('events').innerHTML=arr.map(e=>`<div class="card"><div class="row"><div class="icon">${e.hasVehicle===true?'🚗':e.hasVehicle===false?'📍':'❓'}</div><div class="grow"><b>${e.hasVehicle===true?'Com veículo':e.hasVehicle===false?'Sem veículo':'Escolher depois'}</b><div class="muted">${e.hasVehicle===true?(e.plate?'Placa: '+esc(e.plate):'Placa: Não informada'):e.hasVehicle===false?'Placa: Não se aplica':'Classificação do veículo ainda não definida'}</div><div class="muted">Ocorrência: ${dt(e.eventDateTime)} • Registrada: ${dt(e.createdAt)}</div><div class="desc">${esc(e.description||'Sem descrição')}</div><span class="pill">${(e.media||[]).length} mídia${(e.media||[]).length===1?'':'s'}</span></div></div><button class="media-toggle" type="button" onclick="toggleMediaSection('${e.id}',this)">📎 MÍDIAS <span class="arrow">›</span><span class="muted" style="margin-left:auto;margin-right:8px">${(e.media||[]).length}</span></button><div id="mp_${e.id}" class="media-panel"><div id="m_${e.id}" class="media-grid"></div></div>${e.hasVehicle===true?`<button class="cardbtn" onclick="editPlate('${e.id}')">${e.plate?'✏️ EDITAR PLACA':'🔖 INFORMAR PLACA'}</button>`:''}<button class="cardbtn" onclick="editVehicle('${e.id}')">🚗 ALTERAR CLASSIFICAÇÃO DO VEÍCULO</button><button class="cardbtn" onclick="editDescription('${e.id}')">✏️ EDITAR DESCRIÇÃO</button><button class="cardbtn danger" onclick="deleteEvent('${e.id}')">🗑️ EXCLUIR OCORRÊNCIA</button><button class="cardbtn" onclick="startAttach('${e.id}')">📎 ADICIONAR FOTO/VÍDEO</button></div>`).join('')||'<div class="empty">Nenhuma ocorrência registrada.</div>';
- function toggleMediaSection(id,btn){
-   const panel=document.getElementById('mp_'+id);
-   if(!panel)return;
-   const open=panel.classList.toggle('open');
-   btn.classList.toggle('open',open);
- }
- 
  arr.forEach(async e=>{
    let box=document.getElementById('m_'+e.id);if(!box)return;
    let media=e.media||[];
