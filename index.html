@@ -493,10 +493,10 @@ async function saveCall(){
   persist();callNumber.value='';callNote.value='';callPrints.value='';callPrintPreview.innerHTML='';pendingCallNumbers=[];renderPendingCallNumbers();callNumberSource='manual';callOcrStatus.textContent='O número será identificado automaticamente no print quando estiver visível.';renderCalls();render();alert('Ligação registrada.');
 }
 
-function openCallNumbersEdit(id){const c=callsData.find(x=>x.id===id);if(!c)return;normalizeStoredCall(c);editingCallNumbersId=id;pendingCallNumbers=c.numbers.map(n=>n.value);renderCallNumbersEditor();callNumbersEdit.classList.add('on')}
+function openCallNumbersEdit(id){const c=callsData.find(x=>x.id===id);if(!c){alert('Ligação não encontrada.');return}normalizeStoredCall(c);editingCallNumbersId=id;pendingCallNumbers=c.numbers.map(n=>n.value);renderCallNumbersEditor();const panel=document.getElementById('callNumbersEdit');if(panel)panel.classList.add('on')}
 function renderCallNumbersEditor(){const box=document.getElementById('callNumbersEditor');if(!box)return;box.innerHTML=pendingCallNumbers.map((n,i)=>`<div class="call-number-editor"><input value="${esc(n)}" placeholder="Ex.: (75) 99999-9999" oninput="pendingCallNumbers[${i}]=this.value"><button type="button" onclick="pendingCallNumbers.splice(${i},1);renderCallNumbersEditor()">🗑️</button></div>`).join('')}
 function addCallNumberEditor(){pendingCallNumbers.push('');renderCallNumbersEditor()}
-function closeCallNumbersEdit(){callNumbersEdit.classList.remove('on');editingCallNumbersId=null;pendingCallNumbers=[]}
+function closeCallNumbersEdit(){const panel=document.getElementById('callNumbersEdit');if(panel)panel.classList.remove('on');editingCallNumbersId=null;pendingCallNumbers=[]}
 function saveCallNumbersEdit(){const c=callsData.find(x=>x.id===editingCallNumbersId);if(!c)return;const values=[...new Set(pendingCallNumbers.map(x=>normalizeCallNumber(x)||String(x).trim()).filter(Boolean))];if(!values.length){if(!confirm('Nenhum número foi informado. Salvar a ligação sem número?'))return}c.numbers=values.map((value,i)=>({value,source:i===0?'manual':'manual'}));c.number=values[0]||'';c.numberSource='manual';persist();closeCallNumbersEdit();renderCalls();render();alert('Números da ligação atualizados.')}
 
 async function openCallPrintViewer(callId,index){
