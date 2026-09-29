@@ -256,7 +256,23 @@ function render(){
      box.appendChild(more);
    }
  })
- document.getElementById('callsMini').innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3).map(c=>`<div class="listitem"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}</div></div>`).join('')||'<div class="empty">Nenhuma ligação registrada.</div>';
+ document.getElementById('callsMini').innerHTML=callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3).map(c=>`<div class="listitem"><b>📞 ${esc(c.number||'Número não informado')}</b><div class="muted">${dt(c.date)} • ${esc(c.type)}</div><div id="miniCallPrints_${esc(c.id)}" class="call-print-grid"></div></div>`).join('')||'<div class="empty">Nenhuma ligação registrada.</div>';
+callsData.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3).forEach(c=>renderMiniCallPrints(c));
+}
+
+async function renderMiniCallPrints(c){
+  const box=document.getElementById('miniCallPrints_'+c.id); if(!box)return;
+  box.innerHTML='';
+  const prints=c.prints||[];
+  for(let i=0;i<prints.length;i++){
+    const p=prints[i];
+    const b=await getBlob(p.id);
+    if(!b){const n=document.createElement('div');n.className='call-missing';n.textContent='Print não disponível neste armazenamento.';box.appendChild(n);continue}
+    const u=URL.createObjectURL(b),btn=document.createElement('button');
+    btn.className='call-print';btn.type='button';btn.title='Abrir print';
+    const im=document.createElement('img');im.src=u;im.alt=p.name||'Print da ligação';btn.appendChild(im);
+    btn.onclick=()=>openCallPrintViewer(c.id,i);box.appendChild(btn);
+  }
 }
 
 function baseForm(preservePending=false){attachId=null;if(!preservePending)pending=[];hasVehicle=null;attachMsg.classList.add('hidden');attachControls.classList.add('hidden');vehicleChoice.style.display='flex';dateWrap.classList.remove('hidden');plate.disabled=true;description.disabled=false;eventDate.disabled=false;eventTime.disabled=false;let t=today();eventDate.value=t.d;eventTime.value=t.t;description.value='';plate.value='';setVehicle(null);existingMedia.classList.add('hidden');pendingBox('pending')}
