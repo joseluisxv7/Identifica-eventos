@@ -155,19 +155,19 @@ async function recoverAndRefreshCallPrints(){
 }
 
 function legacyPhoneCandidates(text){
-  const out=[], seen=new Set();
-  const s=String(text||'').replace(/[\\u00a0]/g,' ');
+  const out=[],seen=new Set();
+  const raw=String(text||'').replace(/\u00a0/g,' ');
+  const add=v=>{const n=normalizeCallNumber(v);if(n&&!seen.has(n)){seen.add(n);out.push(n)}};
+
+  const digitRuns=raw.match(/(?:\+?55[\s().-]*)?(?:\d[\s().-]*){10,13}/g)||[];
+  for(const m of digitRuns)add(m);
+
   const patterns=[
-    /(?:\\+?55[\\s.-]*)?(?:\\(\\s*\\d{2}\\s*\\)|\\b\\d{2}\\b)[\\s.-]*9\\d{4}[\\s.-]?\\d{4}/g,
-    /(?:\\+?55[\\s.-]*)?(?:\\(\\s*\\d{2}\\s*\\)|\\b\\d{2}\\b)[\\s.-]*[2-5]\\d{3}[\\s.-]?\\d{4}/g,
-    /\\b(?:0800|0300|0500)[\\s.-]*[\\d\\s.-]{7,}\\b/g
+    /(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\d{2})[\s.-]*9\d{4}[\s.-]?\d{4}/g,
+    /(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\d{2})[\s.-]*[2-5]\d{3}[\s.-]?\d{4}/g,
+    /\b(?:0800|0300|0500)[\s.-]*[\d\s.-]{7,}\b/g
   ];
-  for(const re of patterns){
-    for(const m of s.matchAll(re)){
-      const n=normalizeCallNumber(m[0]);
-      if(n&&!seen.has(n)){seen.add(n);out.push(n)}
-    }
-  }
+  for(const re of patterns)for(const m of raw.matchAll(re))add(m[0]);
   return out;
 }
 
@@ -417,9 +417,23 @@ function normalizeCallNumber(v){
 }
 
 function callNumberCandidates(text){
-  const out=[],raw=String(text||'').replace(/[\u00a0]/g,' ');
-  const re=/(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\b\d{2}\b)[\s.-]*9\d{4}[\s.-]?\d{4}|(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\b\d{2}\b)[\s.-]*[2-5]\d{3}[\s.-]?\d{4}|\b(?:0800|0300|0500)\s*[\d\s.-]{7,}\b/g;
-  for(const m of raw.matchAll(re)){const n=normalizeCallNumber(m[0]);if(n&&!out.includes(n))out.push(n)}
+  const out=[],seen=new Set();
+  const raw=String(text||'').replace(/\u00a0/g,' ');
+  const add=v=>{const n=normalizeCallNumber(v);if(n&&!seen.has(n)){seen.add(n);out.push(n)}};
+
+  // Primeiro tenta sequências contínuas ou separadas de 10/11/12/13 dígitos.
+  // Isso cobre, inclusive, o caso comum em que o OCR lê "(75) 99999-9999"
+  // simplesmente como "75999999999".
+  const digitRuns=raw.match(/(?:\+?55[\s().-]*)?(?:\d[\s().-]*){10,13}/g)||[];
+  for(const m of digitRuns)add(m);
+
+  // Depois tenta os formatos explicitamente estruturados.
+  const patterns=[
+    /(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\d{2})[\s.-]*9\d{4}[\s.-]?\d{4}/g,
+    /(?:\+?55[\s.-]*)?(?:\(\s*\d{2}\s*\)|\d{2})[\s.-]*[2-5]\d{3}[\s.-]?\d{4}/g,
+    /\b(?:0800|0300|0500)[\s.-]*[\d\s.-]{7,}\b/g
+  ];
+  for(const re of patterns)for(const m of raw.matchAll(re))add(m[0]);
   return out;
 }
 
