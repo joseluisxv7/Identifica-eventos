@@ -47,6 +47,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <button class="btn wide" onclick="newGallery.click()">🖼️ ANEXAR MÍDIA<small>Várias fotos/vídeos para uma nova ocorrência</small></button>
 <input id="newGallery" class="hidden" type="file" accept="image/*,video/*" multiple onchange="galleryNew(this.files)">
 <button class="btn secondary" onclick="openCompare()">🔎 COMPARAR OCORRÊNCIAS<small>Coincidências de veículos por placa</small></button>
+<button class="btn secondary" onclick="openCallCompare()">📞 COMPARAR LIGAÇÕES<small>Frequência e repetição por número</small></button>
 <button class="btn secondary" onclick="openAnalysis()">📊 ANÁLISE DOS EVENTOS<small>Filtros, padrões e relações</small></button>
 <button class="btn secondary wide" onclick="openCalls()">📞 LIGAÇÕES SUSPEITAS<small>Registrar número e anexar prints</small></button>
 <button class="btn secondary" onclick="backupExport()">💾 BACKUP</button>
@@ -82,6 +83,7 @@ main{max-width:950px;margin:auto;padding:14px 18px 45px}.stats{display:grid;grid
 <label>Número</label><input id="callNumber" placeholder="Ex.: (75) 99999-9999"><label>Tipo</label><select id="callType"><option>Recebida</option><option>Perdida</option><option>Realizada</option><option>Desconhecida</option></select><label>Data/hora</label><input id="callDate" type="datetime-local"><label>Observação</label><textarea id="callNote" placeholder="Contexto da ligação..."></textarea><label>Prints</label><input id="callPrints" type="file" accept="image/*" multiple onchange="previewCallPrints(this.files)"><div id="callPrintPreview" class="call-print-grid"></div><div id="callOcrStatus" class="ocr-status">O número será identificado automaticamente no print quando estiver visível.</div><div id="callOcrNumbers" class="call-ocr-list"></div><button class="btn secondary call-recover" type="button" onclick="addPendingCallNumber()">➕ ADICIONAR OUTRO NÚMERO</button><button class="btn secondary call-recover" onclick="recoverAndRefreshCallPrints()">♻️ RECUPERAR PRINTS ANTIGOS</button><button class="btn secondary call-recover" type="button" onclick="readLegacyCallNumbers()">🔎 LER NÚMEROS DOS PRINTS ANTIGOS</button><button class="btn save" onclick="saveCall()">SALVAR LIGAÇÃO</button><div class="section"><h2>Registros</h2><div id="callsList"></div></div></div>
 
 <div class="overlay" id="callNumbersEdit"><button class="close" onclick="closeCallNumbersEdit()">‹</button><h2>✏️ Editar números da ligação</h2><div class="notice">Você pode informar, corrigir, adicionar ou excluir números associados a esta mesma ligação.</div><div id="callNumbersEditor"></div><button class="btn secondary call-number-add" type="button" onclick="addCallNumberEditor()">➕ ADICIONAR NÚMERO</button><button class="btn save" type="button" onclick="saveCallNumbersEdit()">SALVAR NÚMEROS</button></div><div class="overlay" id="compare"><button class="close" onclick="compare.classList.remove('on')">‹</button><h2>🔎 Comparar ocorrências</h2><div id="compareBody"></div></div>
+<div class="overlay" id="callCompare"><button class="close" onclick="callCompare.classList.remove('on')">‹</button><h2>📞 Comparar ligações suspeitas</h2><div class="notice">Os números são agrupados para mostrar quantas ligações foram registradas para cada um e quando ocorreram.</div><div id="callCompareBody"></div></div>
 <div class="overlay" id="analysis"><button class="close" onclick="analysis.classList.remove('on')">‹</button><h2>📊 Análise dos eventos</h2><div id="analysisBody"></div></div>
 <div class="viewer" id="callPrintViewer"><div class="viewer-top"><button class="close" onclick="closeCallPrintViewer()">‹</button><b id="callViewerTitle" class="viewer-title">Print da ligação</b><span id="callViewerCount" class="viewer-count"></span></div><div id="callViewerBody" class="viewer-body"></div><div class="viewer-controls"><button onclick="prevCallPrint()">◀ Anterior</button><button onclick="nextCallPrint()">Próximo ▶</button><button class="delete-media" onclick="closeCallPrintViewer()">FECHAR</button></div></div>
 
@@ -513,6 +515,27 @@ async function showCallPrint(){
 function prevCallPrint(){const c=callsData.find(x=>x.id===callViewerId);if(!c)return;callViewerIndex=(callViewerIndex-1+c.prints.length)%c.prints.length;showCallPrint()}
 function nextCallPrint(){const c=callsData.find(x=>x.id===callViewerId);if(!c)return;callViewerIndex=(callViewerIndex+1)%c.prints.length;showCallPrint()}
 function closeCallPrintViewer(){if(callViewerObjectUrl){try{URL.revokeObjectURL(callViewerObjectUrl)}catch{}callViewerObjectUrl=null}callViewerBody.innerHTML='';callPrintViewer.classList.remove('on');callViewerId=null}
+function openCallCompare(){
+  const groups={};
+  (callsData||[]).forEach(c=>{
+    const raw=Array.isArray(c.numbers)&&c.numbers.length?c.numbers.map(n=>n&&n.value).filter(Boolean):[c.number||''];
+    const unique=[...new Set(raw.map(v=>normalizeCallNumber(v)||String(v).trim()).filter(Boolean))];
+    unique.forEach(number=>{
+      const key=String(number).replace(/\D/g,'')||String(number).toLowerCase();
+      if(!groups[key])groups[key]={number,count:0,records:[]};
+      groups[key].count++;
+      groups[key].records.push(c);
+    });
+  });
+  const rows=Object.values(groups).filter(g=>g.count>1).sort((a,b)=>b.count-a.count||String(a.number).localeCompare(String(b.number)));
+  const body=document.getElementById('callCompareBody');
+  body.innerHTML=rows.length?rows.map(g=>{
+    const entries=g.records.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(c=>`<div class="listitem">${dt(c.date)} — ${esc(c.type||'Tipo não informado')}${c.note?' — '+esc(c.note):''}</div>`).join('');
+    return `<div class="card"><b>📞 ${esc(g.number)}</b><div class="muted">${g.count} ligações registradas</div>${entries}</div>`;
+  }).join(''):'<div class="empty">Nenhum número repetido foi encontrado. Registre ou corrija os números das ligações para comparar a frequência.</div>';
+  document.getElementById('callCompare').classList.add('on');
+}
+
 function openCompare(){let map={};eventsData.forEach(e=>{if(e.plate)map[e.plate]=(map[e.plate]||[]).concat([e])});let out=Object.entries(map).filter(([p,a])=>a.length>1).map(([p,a])=>`<div class="card"><b>🚗 ${esc(p)}</b><div class="muted">${a.length} ocorrências</div>${a.map(e=>`<div class="listitem">${dt(e.eventDateTime)} — ${esc(e.description||'')}</div>`).join('')}</div>`).join('');compareBody.innerHTML=out||'<div class="empty">Nenhuma placa aparece em mais de uma ocorrência.</div>';compare.classList.add('on')}
 function openAnalysis(){let byMonth={};eventsData.forEach(e=>{let k=(e.eventDateTime||'').slice(0,7)||'Sem data';byMonth[k]=(byMonth[k]||0)+1});analysisBody.innerHTML=`<div class="notice">A análise utiliza a <b>data real da ocorrência</b>.</div><h3>Total: ${eventsData.length}</h3>${Object.entries(byMonth).sort().reverse().map(([m,n])=>`<div class="listitem"><b>${esc(m)}</b><div class="muted">${n} ocorrência(s)</div></div>`).join('')||'<div class="empty">Sem dados.</div>'}`;analysis.classList.add('on')}
 function diagnosticarRecuperacao(){
